@@ -104,6 +104,13 @@ namespace ChartNETDemo
                 }
 
             };
+
+            MyPieChart.Segments = new List<PieSegment>
+            {
+                new PieSegment { Label="A", Value=30, Fill=Brushes.Red },
+                new PieSegment { Label="B", Value=50, Fill=Brushes.Green },
+                new PieSegment { Label="C", Value=20, Fill=Brushes.Blue }
+            };
         }
 
         private void OnCloseApplication(object sender, RoutedEventArgs e)

@@ -40,6 +40,7 @@
             Fill="Black" />
 
         <Grid Grid.Row="1">
+            <!--
             <local:LineChartControl
                 x:Name="LineChart"
                 Width="600"
@@ -57,6 +58,11 @@
                 YAxisTitleAlignment="Center"
                 YAxisTitleBrush="DarkRed"
                 YAxisTitleFontSize="14" />
+            -->
+            <local:PieChartControl
+                x:Name="MyPieChart"
+                Width="600"
+                Height="400" />
         </Grid>
 
     </Grid>
