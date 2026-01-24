@@ -111,7 +111,16 @@
                 Width="700"
                 Height="400"
                 LegendPosition="Top"
-                Series="{Binding Path=BarChartSeries}" />
+                Series="{Binding Path=BarChartSeries}"
+                
+                XAxisTitle = "Jahr"
+                XAxisTitleFontSize = "14"
+                XAxisTitleForeground = "Green"
+                
+                YAxisTitle="Umsatz in €"
+                YAxisTitleAlignment="Center"
+                YAxisTitleFontSize="14"
+                YAxisTitleForeground="DarkBlue" />
 
         </Grid>
 

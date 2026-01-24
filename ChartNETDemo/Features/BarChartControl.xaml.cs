@@ -1,8 +1,10 @@
 ﻿namespace ChartNETDemo
 {
+    using System.Globalization;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Media;
+    using System.Windows.Media.Imaging;
     using System.Windows.Shapes;
 
     public enum LegendPosition
@@ -41,14 +43,73 @@
         public BarChartControl()
         {
             InitializeComponent();
-            this.SizeChanged += (_, _) => Redraw();
+            this.SizeChanged += (_, _) =>
+            {
+                Redraw();
+            };
 
             this.Loaded += (_, __) =>
             {
-                UpdateLegendLayout();
-                Redraw();
+                this.UpdateLegendLayout();
+                this.Redraw();
             };
         }
+
+        #region X-Achsentitel + Gridlines
+
+        public string XAxisTitle
+        {
+            get => (string)GetValue(XAxisTitleProperty);
+            set => SetValue(XAxisTitleProperty, value);
+        }
+
+        public static readonly DependencyProperty XAxisTitleProperty =
+            DependencyProperty.Register(
+                nameof(XAxisTitle),
+                typeof(string),
+                typeof(BarChartControl),
+                new PropertyMetadata(string.Empty, (_, __) => ((BarChartControl)_).Redraw()));
+
+        public double XAxisTitleFontSize
+        {
+            get => (double)GetValue(XAxisTitleFontSizeProperty);
+            set => SetValue(XAxisTitleFontSizeProperty, value);
+        }
+
+        public static readonly DependencyProperty XAxisTitleFontSizeProperty =
+            DependencyProperty.Register(
+                nameof(XAxisTitleFontSize),
+                typeof(double),
+                typeof(BarChartControl),
+                new PropertyMetadata(12.0, (_, __) => ((BarChartControl)_).Redraw()));
+
+        public Brush XAxisTitleForeground
+        {
+            get => (Brush)GetValue(XAxisTitleForegroundProperty);
+            set => SetValue(XAxisTitleForegroundProperty, value);
+        }
+
+        public static readonly DependencyProperty XAxisTitleForegroundProperty =
+            DependencyProperty.Register(
+                nameof(XAxisTitleForeground),
+                typeof(Brush),
+                typeof(BarChartControl),
+                new PropertyMetadata(Brushes.Black, (_, __) => ((BarChartControl)_).Redraw()));
+
+        public bool ShowHorizontalGridLines
+        {
+            get => (bool)GetValue(ShowHorizontalGridLinesProperty);
+            set => SetValue(ShowHorizontalGridLinesProperty, value);
+        }
+
+        public static readonly DependencyProperty ShowHorizontalGridLinesProperty =
+            DependencyProperty.Register(
+                nameof(ShowHorizontalGridLines),
+                typeof(bool),
+                typeof(BarChartControl),
+                new PropertyMetadata(true, (_, __) => ((BarChartControl)_).Redraw()));
+
+        #endregion
 
         #region DependencyProperty
 
@@ -106,14 +167,18 @@
             PART_Legend.Children.Clear();
 
             if (Series == null || !Series.Any() || ActualWidth <= 0 || ActualHeight <= 0)
+            {
                 return;
+            }
 
-            DrawYAxisWithLabels();
-            DrawBars();
-            DrawXAxisLabels();
+            this.DrawYAxisWithLabels();
+            this.DrawBars();
+            this.DrawXAxisLabels();
 
-            if (ShowLegend)
-                DrawLegend();
+            if (this.ShowLegend)
+            {
+                this.DrawLegend();
+            }
         }
 
         private void DrawLegend()
@@ -145,14 +210,14 @@
                 row.Children.Add(colorBox);
                 row.Children.Add(text);
 
-                PART_Legend.Children.Add(row);
+                this.PART_Legend.Children.Add(row);
             }
         }
 
         private void DrawAxes()
         {
             // Y-Achse
-            PART_Canvas.Children.Add(new Line
+            this.PART_Canvas.Children.Add(new Line
             {
                 X1 = LeftMargin,
                 Y1 = TopMargin,
@@ -162,7 +227,7 @@
             });
 
             // X-Achse
-            PART_Canvas.Children.Add(new Line
+            this.PART_Canvas.Children.Add(new Line
             {
                 X1 = LeftMargin,
                 Y1 = ActualHeight - BottomMargin,
@@ -174,18 +239,19 @@
 
         private void DrawBars()
         {
-            if (Series == null || !Series.Any())
+            if (this.Series == null || this.Series.Any() == false)
+            {
                 return;
+            }
 
-            var seriesList = Series.ToList();
+            var seriesList = this.Series.ToList();
 
             // X-Kategorien aus erster Serie
             var categories = seriesList.First().Values.Select(v => v.X).ToList();
             int categoryCount = categories.Count;
 
             // Maximalwert für gestapelte Balken
-            double maxStackValue = categories.Max(cat =>
-                seriesList.Sum(s => s.Values.FirstOrDefault(v => v.X == cat)?.Y ?? 0));
+            double maxStackValue = categories.Max(cat => seriesList.Sum(s => s.Values.FirstOrDefault(v => v.X == cat)?.Y ?? 0));
 
             double plotWidth = ActualWidth - LeftMargin - RightMargin;
             double plotHeight = ActualHeight - TopMargin - BottomMargin;
@@ -201,7 +267,9 @@
                 {
                     var value = series.Values.FirstOrDefault(v => v.X == categories[i]);
                     if (value == null || value.Y <= 0)
+                    {
                         continue;
+                    }
 
                     // Höhe proportional zur Y-Achse
                     double barHeight = value.Y / maxStackValue * plotHeight;
@@ -222,7 +290,7 @@
 
                     Canvas.SetLeft(rect, x);
                     Canvas.SetTop(rect, y);
-                    PART_Canvas.Children.Add(rect);
+                    this.PART_Canvas.Children.Add(rect);
 
                     // Update gestapelte Basis
                     stackBase += value.Y;
@@ -232,19 +300,22 @@
 
         private void DrawYAxisWithLabels()
         {
-            if (Series == null || !Series.Any())
+            if (this.Series == null || this.Series.Any() == false)
+            {
                 return;
+            }
 
             var seriesList = Series.ToList();
             var categories = seriesList.First().Values.Select(v => v.X).ToList();
-            if (!categories.Any())
+            if (categories.Count == 0)
+            {
                 return;
+            }
 
             double plotHeight = ActualHeight - TopMargin - BottomMargin;
 
             // Maximalwert für gestapelte Balken
-            double maxStackValue = categories.Max(cat =>
-                seriesList.Sum(s => s.Values.FirstOrDefault(v => v.X == cat)?.Y ?? 0));
+            double maxStackValue = categories.Max(cat => seriesList.Sum(s => s.Values.FirstOrDefault(v => v.X == cat)?.Y ?? 0));
 
             int tickCount = 5; // Anzahl der Y-Ticks
 
@@ -254,7 +325,7 @@
                 double y = TopMargin + plotHeight - (value / maxStackValue * plotHeight);
 
                 // Tick Linie (kurzer Strich links der Achse)
-                PART_Canvas.Children.Add(new Line
+                this.PART_Canvas.Children.Add(new Line
                 {
                     X1 = LeftMargin - 5,
                     X2 = LeftMargin,
@@ -267,18 +338,32 @@
                 // Label für Y-Achse
                 var label = new TextBlock
                 {
-                    Text = value.ToString("0"), // Ganze Zahl
+                    Text = value.ToString("0",CultureInfo.CurrentCulture),
                     FontSize = 11,
                     Foreground = Brushes.Black
                 };
 
                 Canvas.SetLeft(label, LeftMargin - 50); // links der Achse
-                Canvas.SetTop(label, y - 8);           // leicht nach oben verschieben
-                PART_Canvas.Children.Add(label);
+                Canvas.SetTop(label, y - 8);
+                this.PART_Canvas.Children.Add(label);
+
+                // Horizontale Gridline (optional)
+                if (ShowHorizontalGridLines && i > 0) // skip 0, sonst Achse überlagert
+                {
+                    PART_Canvas.Children.Add(new Line
+                    {
+                        X1 = LeftMargin,
+                        X2 = ActualWidth - RightMargin,
+                        Y1 = y,
+                        Y2 = y,
+                        Stroke = Brushes.LightGray,
+                        StrokeThickness = 1
+                    });
+                }
             }
 
             // Y-Achse Linie
-            PART_Canvas.Children.Add(new Line
+            this.PART_Canvas.Children.Add(new Line
             {
                 X1 = LeftMargin,
                 X2 = LeftMargin,
@@ -287,6 +372,29 @@
                 Stroke = Brushes.Black,
                 StrokeThickness = 1
             });
+
+            // Y-Achsentitel
+            if (!string.IsNullOrEmpty(YAxisTitle))
+            {
+                var titleBlock = new TextBlock
+                {
+                    Text = YAxisTitle,
+                    FontSize = YAxisTitleFontSize,
+                    Foreground = YAxisTitleForeground,
+                    TextAlignment = YAxisTitleAlignment
+                };
+
+                // Rotieren um -90° für vertikalen Titel
+                titleBlock.RenderTransform = new RotateTransform(-90);
+
+                // Position links neben Y-Achse (mittig entlang der Achse)
+                double centerY = TopMargin + plotHeight / 2;
+
+                Canvas.SetLeft(titleBlock, LeftMargin - 60); // links von Labels/Achse
+                Canvas.SetTop(titleBlock, centerY - titleBlock.ActualHeight / 2);
+
+                PART_Canvas.Children.Add(titleBlock);
+            }
         }
 
         private void DrawXAxisLabels()
@@ -314,6 +422,27 @@
                 Canvas.SetTop(text, ActualHeight - BottomMargin + 5);
 
                 PART_Canvas.Children.Add(text);
+            }
+
+            // X-Achsentitel
+            if (!string.IsNullOrEmpty(XAxisTitle))
+            {
+                var titleBlock = new TextBlock
+                {
+                    Text = XAxisTitle,
+                    FontSize = XAxisTitleFontSize,
+                    Foreground = XAxisTitleForeground,
+                    TextAlignment = TextAlignment.Center
+                };
+
+                titleBlock.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+
+                double x = LeftMargin + plotWidth / 2 - titleBlock.DesiredSize.Width / 2;
+                double y = ActualHeight - BottomMargin + 25; // unter den Kategorie-Labels
+
+                Canvas.SetLeft(titleBlock, x);
+                Canvas.SetTop(titleBlock, y);
+                PART_Canvas.Children.Add(titleBlock);
             }
         }
 
@@ -380,5 +509,90 @@
         }
 
         #endregion
+
+        #region Y-Achsentitel Properties
+
+        public string YAxisTitle
+        {
+            get => (string)GetValue(YAxisTitleProperty);
+            set => SetValue(YAxisTitleProperty, value);
+        }
+
+        public static readonly DependencyProperty YAxisTitleProperty =
+            DependencyProperty.Register(
+                nameof(YAxisTitle),
+                typeof(string),
+                typeof(BarChartControl),
+                new PropertyMetadata(string.Empty, (_, __) => ((BarChartControl)_).Redraw()));
+
+        public double YAxisTitleFontSize
+        {
+            get => (double)GetValue(YAxisTitleFontSizeProperty);
+            set => SetValue(YAxisTitleFontSizeProperty, value);
+        }
+
+        public static readonly DependencyProperty YAxisTitleFontSizeProperty =
+            DependencyProperty.Register(
+                nameof(YAxisTitleFontSize),
+                typeof(double),
+                typeof(BarChartControl),
+                new PropertyMetadata(12.0, (_, __) => ((BarChartControl)_).Redraw()));
+
+        public Brush YAxisTitleForeground
+        {
+            get => (Brush)GetValue(YAxisTitleForegroundProperty);
+            set => SetValue(YAxisTitleForegroundProperty, value);
+        }
+
+        public static readonly DependencyProperty YAxisTitleForegroundProperty =
+            DependencyProperty.Register(
+                nameof(YAxisTitleForeground),
+                typeof(Brush),
+                typeof(BarChartControl),
+                new PropertyMetadata(Brushes.Black, (_, __) => ((BarChartControl)_).Redraw()));
+
+        public TextAlignment YAxisTitleAlignment
+        {
+            get => (TextAlignment)GetValue(YAxisTitleAlignmentProperty);
+            set => SetValue(YAxisTitleAlignmentProperty, value);
+        }
+
+        public static readonly DependencyProperty YAxisTitleAlignmentProperty =
+            DependencyProperty.Register(
+                nameof(YAxisTitleAlignment),
+                typeof(TextAlignment),
+                typeof(BarChartControl),
+                new PropertyMetadata(TextAlignment.Center, (_, __) => ((BarChartControl)_).Redraw()));
+
+        #endregion
+
+        #region Export
+        /// <summary>
+        /// Exportiert das Chart als PNG
+        /// </summary>
+        /// <param name="filePath"></param>
+        public void ExportToPng(string filePath)
+        {
+            var size = new Size(ActualWidth, ActualHeight);
+
+            Measure(size);
+            Arrange(new Rect(size));
+            UpdateLayout();
+
+            var rtb = new RenderTargetBitmap(
+                (int)size.Width,
+                (int)size.Height,
+                96, 96,
+                PixelFormats.Pbgra32);
+
+            rtb.Render(this);
+
+            var encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(rtb));
+
+            using var fs = System.IO.File.Create(filePath);
+            encoder.Save(fs);
+        }
+        #endregion Export
     }
 }
