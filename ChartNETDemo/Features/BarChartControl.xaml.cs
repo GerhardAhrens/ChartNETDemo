@@ -35,6 +35,8 @@
         private const double RightMargin = 20;
         private const double TopMargin = 20;
         private const double BottomMargin = 60;
+        private const double ChartPadding = 10;
+        private const double YAxisLabelWidth = 45;
 
         public BarChartControl()
         {
@@ -93,31 +95,6 @@
                 typeof(BarChartControl),
                 new PropertyMetadata(null, (_, __) => ((BarChartControl)_).Redraw()));
 
-        public int YAxisTickCount
-        {
-            get => (int)GetValue(YAxisTickCountProperty);
-            set => SetValue(YAxisTickCountProperty, value);
-        }
-
-        public static readonly DependencyProperty YAxisTickCountProperty =
-            DependencyProperty.Register(
-                nameof(YAxisTickCount),
-                typeof(int),
-                typeof(BarChartControl),
-                new PropertyMetadata(5, (_, __) => ((BarChartControl)_).Redraw()));
-
-        public double? YAxisMaximum
-        {
-            get => (double?)GetValue(YAxisMaximumProperty);
-            set => SetValue(YAxisMaximumProperty, value);
-        }
-
-        public static readonly DependencyProperty YAxisMaximumProperty =
-            DependencyProperty.Register(
-                nameof(YAxisMaximum),
-                typeof(double?),
-                typeof(BarChartControl),
-                new PropertyMetadata(null, (_, __) => ((BarChartControl)_).Redraw()));
 
         #endregion
 
@@ -131,7 +108,7 @@
             if (Series == null || !Series.Any() || ActualWidth <= 0 || ActualHeight <= 0)
                 return;
 
-            DrawAxes();
+            DrawYAxisWithLabels();
             DrawBars();
             DrawXAxisLabels();
 
@@ -197,6 +174,9 @@
 
         private void DrawBars()
         {
+            if (Series == null || !Series.Any())
+                return;
+
             var seriesList = Series.ToList();
 
             // X-Kategorien aus erster Serie
@@ -210,8 +190,8 @@
             double plotWidth = ActualWidth - LeftMargin - RightMargin;
             double plotHeight = ActualHeight - TopMargin - BottomMargin;
 
-            double barWidth = plotWidth / categoryCount * 0.5;
-            double categoryStep = plotWidth / categoryCount;
+            double barWidth = plotWidth / categoryCount * 0.5;       // Balkenbreite
+            double categoryStep = plotWidth / categoryCount;         // Abstand pro Kategorie
 
             for (int i = 0; i < categoryCount; i++)
             {
@@ -223,12 +203,16 @@
                     if (value == null || value.Y <= 0)
                         continue;
 
+                    // Höhe proportional zur Y-Achse
                     double barHeight = value.Y / maxStackValue * plotHeight;
 
+                    // X-Position für die Kategorie
                     double x = LeftMargin + i * categoryStep + (categoryStep - barWidth) / 2;
-                    double y = TopMargin + plotHeight
-                               - (stackBase + value.Y) / maxStackValue * plotHeight;
 
+                    // Y-Position (von oben) unter Berücksichtigung der gestapelten Basis
+                    double y = TopMargin + plotHeight - (stackBase + value.Y) / maxStackValue * plotHeight;
+
+                    // Rechteck für Balken
                     var rect = new Rectangle
                     {
                         Width = barWidth,
@@ -240,9 +224,69 @@
                     Canvas.SetTop(rect, y);
                     PART_Canvas.Children.Add(rect);
 
+                    // Update gestapelte Basis
                     stackBase += value.Y;
                 }
             }
+        }
+
+        private void DrawYAxisWithLabels()
+        {
+            if (Series == null || !Series.Any())
+                return;
+
+            var seriesList = Series.ToList();
+            var categories = seriesList.First().Values.Select(v => v.X).ToList();
+            if (!categories.Any())
+                return;
+
+            double plotHeight = ActualHeight - TopMargin - BottomMargin;
+
+            // Maximalwert für gestapelte Balken
+            double maxStackValue = categories.Max(cat =>
+                seriesList.Sum(s => s.Values.FirstOrDefault(v => v.X == cat)?.Y ?? 0));
+
+            int tickCount = 5; // Anzahl der Y-Ticks
+
+            for (int i = 0; i <= tickCount; i++)
+            {
+                double value = maxStackValue * i / tickCount;
+                double y = TopMargin + plotHeight - (value / maxStackValue * plotHeight);
+
+                // Tick Linie (kurzer Strich links der Achse)
+                PART_Canvas.Children.Add(new Line
+                {
+                    X1 = LeftMargin - 5,
+                    X2 = LeftMargin,
+                    Y1 = y,
+                    Y2 = y,
+                    Stroke = Brushes.Black,
+                    StrokeThickness = 1
+                });
+
+                // Label für Y-Achse
+                var label = new TextBlock
+                {
+                    Text = value.ToString("0"), // Ganze Zahl
+                    FontSize = 11,
+                    Foreground = Brushes.Black
+                };
+
+                Canvas.SetLeft(label, LeftMargin - 50); // links der Achse
+                Canvas.SetTop(label, y - 8);           // leicht nach oben verschieben
+                PART_Canvas.Children.Add(label);
+            }
+
+            // Y-Achse Linie
+            PART_Canvas.Children.Add(new Line
+            {
+                X1 = LeftMargin,
+                X2 = LeftMargin,
+                Y1 = TopMargin,
+                Y2 = TopMargin + plotHeight,
+                Stroke = Brushes.Black,
+                StrokeThickness = 1
+            });
         }
 
         private void DrawXAxisLabels()
@@ -334,6 +378,7 @@
                     break;
             }
         }
+
         #endregion
     }
 }
