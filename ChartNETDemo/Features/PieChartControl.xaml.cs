@@ -6,6 +6,7 @@
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Media;
+    using System.Windows.Media.Imaging;
     using System.Windows.Shapes;
 
     public class PieSegment
@@ -78,7 +79,7 @@
             DrawLegend(centerX * 2 + 20, 20, 100);
         }
 
-        private Path CreatePieSlice(double cx, double cy, double r, double startAngle, double sweepAngle, Brush fill)
+        private static Path CreatePieSlice(double cx, double cy, double r, double startAngle, double sweepAngle, Brush fill)
         {
             bool isLargeArc = sweepAngle > 180;
 
@@ -184,5 +185,34 @@
         }
 
         #endregion
+
+        #region Export
+        /// <summary>
+        /// Exportiert das Chart als PNG
+        /// </summary>
+        /// <param name="filePath"></param>
+        public void ExportToPng(string filePath)
+        {
+            var size = new Size(ActualWidth, ActualHeight);
+
+            Measure(size);
+            Arrange(new Rect(size));
+            UpdateLayout();
+
+            var rtb = new RenderTargetBitmap(
+                (int)size.Width,
+                (int)size.Height,
+                96, 96,
+                PixelFormats.Pbgra32);
+
+            rtb.Render(this);
+
+            var encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(rtb));
+
+            using var fs = System.IO.File.Create(filePath);
+            encoder.Save(fs);
+        }
+        #endregion Export
     }
 }

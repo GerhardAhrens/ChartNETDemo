@@ -22,15 +22,54 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <Button
-            x:Name="BtnCloseApplication"
+        <StackPanel
             Grid.Row="0"
             Grid.Column="0"
-            Width="30"
-            Height="30"
-            HorizontalAlignment="Left">
-            <Image Source="{StaticResource ResourceKey=IconApplicationExit2}" Stretch="None" />
-        </Button>
+            Orientation="Horizontal">
+            <Button
+                x:Name="BtnCloseApplication"
+                Width="30"
+                Height="30"
+                HorizontalAlignment="Left">
+                <Image Source="{StaticResource ResourceKey=IconApplicationExit2}" Stretch="None" />
+            </Button>
+
+            <Button
+                x:Name="BtnLineChart"
+                Width="30"
+                Height="30"
+                Margin="5,0,0,0"
+                HorizontalAlignment="Left">
+                <Image Source="{StaticResource ResourceKey=IconLineChart}" Stretch="None" />
+            </Button>
+
+            <Button
+                x:Name="BtnPieChart"
+                Width="30"
+                Height="30"
+                Margin="5,0,0,0"
+                HorizontalAlignment="Left">
+                <Image Source="{StaticResource ResourceKey=IconPieChart}" Stretch="None" />
+            </Button>
+
+            <Button
+                x:Name="BtnBarChart"
+                Width="30"
+                Height="30"
+                Margin="5,0,0,0"
+                HorizontalAlignment="Left">
+                <Image Source="{StaticResource ResourceKey=IconStackedBarChart}" Stretch="None" />
+            </Button>
+
+            <Button
+                x:Name="BtnGantChart"
+                Width="30"
+                Height="30"
+                Margin="5,0,0,0"
+                HorizontalAlignment="Left">
+                <Image Source="{StaticResource ResourceKey=IconGantChart}" Stretch="None" />
+            </Button>
+        </StackPanel>
 
         <Rectangle
             Grid.Row="0"
@@ -59,10 +98,21 @@
                 YAxisTitleBrush="DarkRed"
                 YAxisTitleFontSize="14" />
             -->
+
+            <!--
             <local:PieChartControl
                 x:Name="MyPieChart"
                 Width="600"
-                Height="400" />
+                Height="400"
+                Segments="{Binding Path=PieChartSegments}" />
+            -->
+            <local:BarChartControl
+                x:Name="MyBarChart"
+                Width="700"
+                Height="400"
+                LegendPosition="Top"
+                Series="{Binding Path=BarChartSeries}" />
+
         </Grid>
 
     </Grid>

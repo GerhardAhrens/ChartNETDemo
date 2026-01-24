@@ -40,33 +40,43 @@ namespace ChartNETDemo
             this.DataContext = this;
         }
 
-        private string _WindowTitel;
-
         public string WindowTitel
         {
-            get { return _WindowTitel; }
+            get;
             set
             {
-                if (this._WindowTitel != value)
-                {
-                    this._WindowTitel = value;
-                    this.OnPropertyChanged();
-                }
+                field = value;
+                this.OnPropertyChanged();
             }
         }
 
-        private ObservableCollection<ChartLine> _chartLines;
-
         public ObservableCollection<ChartLine> ChartLines
         {
-            get { return _chartLines; }
+            get;
             set
             {
-                if (this._chartLines != value)
-                {
-                    this._chartLines = value;
-                    this.OnPropertyChanged();
-                }
+                field = value;
+                this.OnPropertyChanged();
+            }
+        }
+
+        public List<PieSegment> PieChartSegments
+        {
+            get;
+            set
+            {
+                field = value;
+                this.OnPropertyChanged();
+            }
+        }
+
+        public List<BarSeries> BarChartSeries
+        {
+            get;
+            set
+            {
+                field = value;
+                this.OnPropertyChanged();
             }
         }
 
@@ -105,12 +115,42 @@ namespace ChartNETDemo
 
             };
 
-            MyPieChart.Segments = new List<PieSegment>
+            this.PieChartSegments = new List<PieSegment>
             {
                 new PieSegment { Label="A", Value=30, Fill=Brushes.Red },
                 new PieSegment { Label="B", Value=50, Fill=Brushes.Green },
                 new PieSegment { Label="C", Value=20, Fill=Brushes.Blue }
             };
+
+            this.BarChartSeries = new List<BarSeries>
+                        {
+                            new BarSeries
+                            {
+                                Title = "Serie A",
+                                Fill = Brushes.SteelBlue,
+                                Values =
+                                {
+                                    new BarChartPoint { X="2020", Y=10 },
+                                    new BarChartPoint { X="2021", Y=20 },
+                                    new BarChartPoint { X="2022", Y=30 },
+                                    new BarChartPoint { X="2023", Y=25 },
+                                    new BarChartPoint { X="2024", Y=30 }
+                                }
+                            },
+                            new BarSeries
+                            {
+                                Title = "Serie B",
+                                Fill = Brushes.Orange,
+                                Values =
+                                {
+                                    new BarChartPoint { X="2020", Y=5 },
+                                    new BarChartPoint { X="2021", Y=15 },
+                                    new BarChartPoint { X="2022", Y=10 },
+                                    new BarChartPoint { X="2023", Y=8 },
+                                    new BarChartPoint { X="2024", Y=12 }
+                                }
+                            }
+                        };
         }
 
         private void OnCloseApplication(object sender, RoutedEventArgs e)
@@ -126,6 +166,7 @@ namespace ChartNETDemo
             if (msgYN == MessageBoxResult.Yes)
             {
                 //this.LineChart.ExportToPng(@"c:\temp\demo.png");
+                //this.MyPieChart.ExportToPng(@"c:\temp\demo.png");
 
                 App.ApplicationExit();
             }
