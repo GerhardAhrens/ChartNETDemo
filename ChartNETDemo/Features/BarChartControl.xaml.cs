@@ -390,10 +390,10 @@
                 // Position links neben Y-Achse (mittig entlang der Achse)
                 double centerY = TopMargin + plotHeight / 2;
 
-                Canvas.SetLeft(titleBlock, LeftMargin - 60); // links von Labels/Achse
+                Canvas.SetLeft(titleBlock, LeftMargin - 30); // links von Labels/Achse
                 Canvas.SetTop(titleBlock, centerY - titleBlock.ActualHeight / 2);
 
-                PART_Canvas.Children.Add(titleBlock);
+                this.PART_Canvas.Children.Add(titleBlock);
             }
         }
 
@@ -421,7 +421,7 @@
                 Canvas.SetLeft(text, x);
                 Canvas.SetTop(text, ActualHeight - BottomMargin + 5);
 
-                PART_Canvas.Children.Add(text);
+                this.PART_Canvas.Children.Add(text);
             }
 
             // X-Achsentitel
@@ -442,68 +442,70 @@
 
                 Canvas.SetLeft(titleBlock, x);
                 Canvas.SetTop(titleBlock, y);
-                PART_Canvas.Children.Add(titleBlock);
+                this.PART_Canvas.Children.Add(titleBlock);
             }
         }
 
         private void UpdateLegendLayout()
         {
             if (PART_RootGrid == null || PART_Canvas == null || PART_Legend == null)
+            {
                 return;
+            }
 
-            PART_RootGrid.RowDefinitions.Clear();
-            PART_RootGrid.ColumnDefinitions.Clear();
+            this.PART_RootGrid.RowDefinitions.Clear();
+            this.PART_RootGrid.ColumnDefinitions.Clear();
 
             // Reset positions
-            Grid.SetRow(PART_Canvas, 0);
-            Grid.SetColumn(PART_Canvas, 0);
-            Grid.SetRow(PART_Legend, 0);
-            Grid.SetColumn(PART_Legend, 0);
+            Grid.SetRow(this.PART_Canvas, 0);
+            Grid.SetColumn(this.PART_Canvas, 0);
+            Grid.SetRow(this.PART_Legend, 0);
+            Grid.SetColumn(this.PART_Legend, 0);
 
-            switch (LegendPosition)
+            switch (this.LegendPosition)
             {
                 case LegendPosition.Left:
-                    PART_RootGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-                    PART_RootGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                    this.PART_RootGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+                    this.PART_RootGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
 
-                    PART_RootGrid.RowDefinitions.Add(new RowDefinition());
+                    this.PART_RootGrid.RowDefinitions.Add(new RowDefinition());
 
-                    Grid.SetColumn(PART_Legend, 0);
-                    Grid.SetColumn(PART_Canvas, 1);
-                    PART_Legend.Orientation = Orientation.Vertical;
+                    Grid.SetColumn(this.PART_Legend, 0);
+                    Grid.SetColumn(this.PART_Canvas, 1);
+                    this.PART_Legend.Orientation = Orientation.Vertical;
                     break;
 
                 case LegendPosition.Right:
-                    PART_RootGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-                    PART_RootGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+                    this.PART_RootGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                    this.PART_RootGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
-                    PART_RootGrid.RowDefinitions.Add(new RowDefinition());
+                    this.PART_RootGrid.RowDefinitions.Add(new RowDefinition());
 
-                    Grid.SetColumn(PART_Canvas, 0);
-                    Grid.SetColumn(PART_Legend, 1);
-                    PART_Legend.Orientation = Orientation.Vertical;
+                    Grid.SetColumn(this.PART_Canvas, 0);
+                    Grid.SetColumn(this.PART_Legend, 1);
+                    this.PART_Legend.Orientation = Orientation.Vertical;
                     break;
 
                 case LegendPosition.Top:
-                    PART_RootGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-                    PART_RootGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+                    this.PART_RootGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                    this.PART_RootGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
 
-                    PART_RootGrid.ColumnDefinitions.Add(new ColumnDefinition());
+                    this.PART_RootGrid.ColumnDefinitions.Add(new ColumnDefinition());
 
-                    Grid.SetRow(PART_Legend, 0);
-                    Grid.SetRow(PART_Canvas, 1);
-                    PART_Legend.Orientation = Orientation.Horizontal;
+                    Grid.SetRow(this.PART_Legend, 0);
+                    Grid.SetRow(this.PART_Canvas, 1);
+                    this.PART_Legend.Orientation = Orientation.Horizontal;
                     break;
 
                 case LegendPosition.Bottom:
-                    PART_RootGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
-                    PART_RootGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                    this.PART_RootGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+                    this.PART_RootGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
-                    PART_RootGrid.ColumnDefinitions.Add(new ColumnDefinition());
+                    this.PART_RootGrid.ColumnDefinitions.Add(new ColumnDefinition());
 
-                    Grid.SetRow(PART_Canvas, 0);
-                    Grid.SetRow(PART_Legend, 1);
-                    PART_Legend.Orientation = Orientation.Horizontal;
+                    Grid.SetRow(this.PART_Canvas, 0);
+                    Grid.SetRow(this.PART_Legend, 1);
+                    this.PART_Legend.Orientation = Orientation.Horizontal;
                     break;
             }
         }
