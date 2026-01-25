@@ -101,7 +101,7 @@
                         <local:LineChartControl
                             x:Name="LineChart"
                             Grid.Row="1"
-                            Width="600"
+                            Width="800"
                             Height="400"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
@@ -138,7 +138,7 @@
                         <local:PieChartControl
                             x:Name="MyPieChart"
                             Grid.Row="1"
-                            Width="600"
+                            Width="800"
                             Height="400"
                             Segments="{Binding Path=PieChartSegments}" />
                     </Grid>
@@ -161,7 +161,7 @@
                         <local:BarChartControl
                             x:Name="MyBarChart"
                             Grid.Row="1"
-                            Width="700"
+                            Width="800"
                             Height="400"
                             LegendPosition="Top"
                             Series="{Binding Path=BarChartSeries}"
@@ -192,9 +192,12 @@
                         <local:GanttChartControl
                             x:Name="MyGanttChart"
                             Grid.Row="1"
-                            Width="600"
+                            Width="800"
                             Height="400"
-                            Tasks="{Binding Path=Tasks}" />
+                            ShowTodayLine="true"
+                            Tasks="{Binding Path=Tasks}"
+                            TodayLineBrush="Red"
+                            TodayLineThickness="1" />
 
                     </Grid>
                 </TabItem>

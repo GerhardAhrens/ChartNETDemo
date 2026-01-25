@@ -235,23 +235,37 @@ namespace ChartNETDemo
                 new GanttTask
                 {
                     Title = "Analyse",
-                    Start = new DateTime(2024, 1, 1),
-                    End   = new DateTime(2024, 1, 15),
+                    Start = new DateTime(DateTime.Now.Year, 1, 1),
+                    End   = new DateTime(DateTime.Now.Year, 1, 15),
                     Fill  = Brushes.SteelBlue
                 },
                 new GanttTask
                 {
                     Title = "Implementierung",
-                    Start = new DateTime(2024, 1, 10),
-                    End   = new DateTime(2024, 2, 10),
+                    Start = new DateTime(DateTime.Now.Year, 1, 10),
+                    End   = new DateTime(DateTime.Now.Year, 2, 10),
                     Fill  = Brushes.Orange
                 },
                 new GanttTask
                 {
                     Title = "Test",
-                    Start = new DateTime(2024, 2, 1),
-                    End   = new DateTime(2024, 2, 20),
+                    Start = new DateTime(DateTime.Now.Year, 2, 1),
+                    End   = new DateTime(DateTime.Now.Year, 2, 20),
                     Fill  = Brushes.Green
+                },
+                new GanttTask
+                {
+                    Title = "Dokumentation",
+                    Start = new DateTime(DateTime.Now.Year, 2, 1),
+                    End   = new DateTime(DateTime.Now.Year, 3, 10),
+                    Fill  = Brushes.Yellow
+                },
+                new GanttTask
+                {
+                    Title = "Im Betrieb",
+                    Start = new DateTime(DateTime.Now.Year, 3, 1),
+                    End   = new DateTime(DateTime.Now.Year, 4, 1),
+                    Fill  = Brushes.Red
                 }
             };
         }

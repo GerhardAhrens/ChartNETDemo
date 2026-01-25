@@ -3,9 +3,11 @@
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.IO;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Media;
+    using System.Windows.Media.Imaging;
     using System.Windows.Shapes;
 
     public class GanttTask
@@ -50,6 +52,49 @@
 
         #endregion
 
+        #region Today Line
+
+        public bool ShowTodayLine
+        {
+            get => (bool)GetValue(ShowTodayLineProperty);
+            set => SetValue(ShowTodayLineProperty, value);
+        }
+
+        public static readonly DependencyProperty ShowTodayLineProperty =
+            DependencyProperty.Register(
+                nameof(ShowTodayLine),
+                typeof(bool),
+                typeof(GanttChartControl),
+                new PropertyMetadata(true, (_, __) => ((GanttChartControl)_).Redraw()));
+
+        public Brush TodayLineBrush
+        {
+            get => (Brush)GetValue(TodayLineBrushProperty);
+            set => SetValue(TodayLineBrushProperty, value);
+        }
+
+        public static readonly DependencyProperty TodayLineBrushProperty =
+            DependencyProperty.Register(
+                nameof(TodayLineBrush),
+                typeof(Brush),
+                typeof(GanttChartControl),
+                new PropertyMetadata(Brushes.Red, (_, __) => ((GanttChartControl)_).Redraw()));
+
+        public double TodayLineThickness
+        {
+            get => (double)GetValue(TodayLineThicknessProperty);
+            set => SetValue(TodayLineThicknessProperty, value);
+        }
+
+        public static readonly DependencyProperty TodayLineThicknessProperty =
+            DependencyProperty.Register(
+                nameof(TodayLineThickness),
+                typeof(double),
+                typeof(GanttChartControl),
+                new PropertyMetadata(2.0, (_, __) => ((GanttChartControl)_).Redraw()));
+
+        #endregion
+
         #region Rendering
 
         private void Redraw()
@@ -64,6 +109,7 @@
             this.DrawAxes();
             this.DrawYAxisLabels();
             this.DrawTasks();
+            this.DrawTodayLine();
             this.DrawXAxisLabels();
         }
 
@@ -203,6 +249,76 @@
             }
         }
 
+        private void DrawTodayLine()
+        {
+            if (!ShowTodayLine || Tasks == null || !Tasks.Any())
+                return;
+
+            var taskList = Tasks.ToList();
+
+            DateTime minDate = taskList.Min(t => t.Start).Date;
+            DateTime maxDate = taskList.Max(t => t.End).Date;
+            DateTime today = DateTime.Today;
+
+            // Nur anzeigen, wenn Heute im Bereich liegt
+            if (today < minDate || today > maxDate)
+                return;
+
+            double plotWidth = ActualWidth - LeftMargin - RightMargin;
+            double plotHeight = ActualHeight - BottomMargin;
+
+            double totalDays = (maxDate - minDate).TotalDays;
+            if (totalDays <= 0)
+                return;
+
+            double x =
+                LeftMargin +
+                (today - minDate).TotalDays / totalDays * plotWidth;
+
+            var line = new Line
+            {
+                X1 = x,
+                X2 = x,
+                Y1 = TopMargin,
+                Y2 = plotHeight,
+                Stroke = TodayLineBrush,
+                StrokeThickness = TodayLineThickness,
+                StrokeDashArray = new DoubleCollection { 4, 4 } // gestrichelt
+            };
+
+            PART_Canvas.Children.Add(line);
+        }
+
+        #endregion
+
+        #region Export als PNG Image
+        public void ExportToPng(string filePath, double dpi = 96)
+        {
+            if (this.ActualWidth <= 0 || this.ActualHeight <= 0)
+            {
+                return;
+            }
+
+            // Layout sicherstellen
+            Measure(new Size(this.ActualWidth, this.ActualHeight));
+            Arrange(new Rect(new Size(this.ActualWidth, this.ActualHeight)));
+            UpdateLayout();
+
+            var rtb = new RenderTargetBitmap(
+                (int)(this.ActualWidth * dpi / 96.0),
+                (int)(this.ActualHeight * dpi / 96.0),
+                dpi,
+                dpi,
+                PixelFormats.Pbgra32);
+
+            rtb.Render(this);
+
+            var encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(rtb));
+
+            using FileStream fs = new FileStream(filePath, FileMode.Create);
+            encoder.Save(fs);
+        }
         #endregion
     }
 }
