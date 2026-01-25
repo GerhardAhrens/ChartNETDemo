@@ -205,6 +205,7 @@
                             Width="800"
                             Height="400"
                             Series="{Binding Path=BarChartHorizontalSeries}"
+                            XAxisScaleFormat="Number"
                             XAxisTitle="Jahr"
                             XAxisTitleFontSize="14"
                             XAxisTitleForeground="Green"

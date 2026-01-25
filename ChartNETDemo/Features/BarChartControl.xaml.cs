@@ -7,6 +7,14 @@
     using System.Windows.Media.Imaging;
     using System.Windows.Shapes;
 
+    public enum AxisScaleFormat
+    {
+        Number,     // 1234
+        NumberK,    // 1.2k
+        NumberM,    // 1.2M
+        Percent     // 25 %
+    }
+
     public enum LegendPosition
     {
         Left,
@@ -154,6 +162,23 @@
                 typeof(BarChartControl),
                 new PropertyMetadata(null, (_, __) => ((BarChartControl)_).Redraw()));
 
+
+        #endregion
+
+        #region Axis Scale Format
+
+        public AxisScaleFormat XAxisScaleFormat
+        {
+            get => (AxisScaleFormat)GetValue(XAxisScaleFormatProperty);
+            set => SetValue(XAxisScaleFormatProperty, value);
+        }
+
+        public static readonly DependencyProperty XAxisScaleFormatProperty =
+            DependencyProperty.Register(
+                nameof(XAxisScaleFormat),
+                typeof(AxisScaleFormat),
+                typeof(BarChartControl),
+                new PropertyMetadata(AxisScaleFormat.Number, (_, __) => ((BarChartControl)_).Redraw()));
 
         #endregion
 
@@ -311,11 +336,12 @@
                 });
 
                 // Label für Y-Achse
+
                 var label = new TextBlock
                 {
-                    Text = value.ToString("0",CultureInfo.CurrentCulture),
-                    FontSize = 11,
-                    Foreground = Brushes.Black
+                    Text = FormatAxisValue(value),
+                    FontSize = XAxisTitleFontSize,
+                    Foreground = Brushes.Black,
                 };
 
                 Canvas.SetLeft(label, LeftMargin - 50); // links der Achse
@@ -385,7 +411,7 @@
                 var text = new TextBlock
                 {
                     Text = categories[i],
-                    FontSize = 12
+                    FontSize = YAxisTitleFontSize
                 };
 
                 text.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
@@ -483,6 +509,32 @@
                     this.PART_Legend.Orientation = Orientation.Horizontal;
                     break;
             }
+        }
+
+        private string FormatAxisValue(double value)
+        {
+            return XAxisScaleFormat switch
+            {
+                AxisScaleFormat.Number =>
+                    value.ToString("0", CultureInfo.CurrentCulture),
+
+                AxisScaleFormat.NumberK =>
+                    value >= 1000
+                        ? (value / 1000d).ToString("0.#", CultureInfo.CurrentCulture) + "k"
+                        : value.ToString("0", CultureInfo.CurrentCulture),
+
+                AxisScaleFormat.NumberM =>
+                    value >= 1_000_000
+                        ? (value / 1_000_000d).ToString("0.##", CultureInfo.CurrentCulture) + "M"
+                        : value >= 1000
+                            ? (value / 1000d).ToString("0.#", CultureInfo.CurrentCulture) + "k"
+                            : value.ToString("0", CultureInfo.CurrentCulture),
+
+                AxisScaleFormat.Percent =>
+                    (value * 100).ToString("0.#", CultureInfo.CurrentCulture) + " %",
+
+                _ => value.ToString("0", CultureInfo.CurrentCulture)
+            };
         }
 
         #endregion

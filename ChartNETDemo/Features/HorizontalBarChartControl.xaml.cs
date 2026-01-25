@@ -206,6 +206,23 @@
 
         #endregion Axis Titles
 
+        #region Axis Scale Format
+
+        public AxisScaleFormat XAxisScaleFormat
+        {
+            get => (AxisScaleFormat)GetValue(XAxisScaleFormatProperty);
+            set => SetValue(XAxisScaleFormatProperty, value);
+        }
+
+        public static readonly DependencyProperty XAxisScaleFormatProperty =
+            DependencyProperty.Register(
+                nameof(XAxisScaleFormat),
+                typeof(AxisScaleFormat),
+                typeof(HorizontalBarChartControl),
+                new PropertyMetadata(AxisScaleFormat.Number, (_, __) => ((HorizontalBarChartControl)_).Redraw()));
+
+        #endregion Axis Scale Format
+
         #region Rendering
 
         private void Redraw()
@@ -391,7 +408,12 @@
                     });
                 }
 
-                var label = new TextBlock { Text = value.ToString("0",CultureInfo.CurrentCulture) };
+                var label = new TextBlock
+                {
+                    Text = FormatAxisValue(value),
+                    FontSize = 11
+                };
+
                 Canvas.SetLeft(label, x - 10);
                 Canvas.SetTop(label, plotHeight + TOPMARGIN + 5);
                 this.PART_Canvas.Children.Add(label);
@@ -453,6 +475,30 @@
                     Grid.SetRow(this.PART_Legend, 1);
                     break;
             }
+        }
+
+        private string FormatAxisValue(double value)
+        {
+            return XAxisScaleFormat switch
+            {
+                AxisScaleFormat.Number =>  value.ToString("0", CultureInfo.CurrentCulture),
+
+                AxisScaleFormat.NumberK =>
+                    value >= 1000
+                        ? (value / 1000d).ToString("0.#", CultureInfo.CurrentCulture) + "k"
+                        : value.ToString("0", CultureInfo.CurrentCulture),
+
+                AxisScaleFormat.NumberM =>
+                    value >= 1_000_000
+                        ? (value / 1_000_000d).ToString("0.##", CultureInfo.CurrentCulture) + "M"
+                        : value >= 1000
+                            ? (value / 1000d).ToString("0.#", CultureInfo.CurrentCulture) + "k"
+                            : value.ToString("0", CultureInfo.CurrentCulture),
+
+                AxisScaleFormat.Percent => (value * 100).ToString("0.#", CultureInfo.CurrentCulture) + " %",
+
+                _ => value.ToString("0", CultureInfo.CurrentCulture)
+            };
         }
 
         #endregion
