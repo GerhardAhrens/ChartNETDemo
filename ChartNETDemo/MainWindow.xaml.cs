@@ -80,77 +80,52 @@ namespace ChartNETDemo
             }
         }
 
+        public List<GanttTask> Tasks
+        {
+            get;
+            set
+            {
+                field = value;
+                this.OnPropertyChanged();
+            }
+        }
+
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnCloseApplication, "Click", this.OnCloseApplication);
+            WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnLineChart, "Click", this.OnSelectedChart);
+            WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnPieChart, "Click", this.OnSelectedChart);
+            WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnBarChart, "Click", this.OnSelectedChart);
+            WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnGanttChart, "Click", this.OnSelectedChart);
 
-            ChartLines = new ObservableCollection<ChartLine>
+            this.LineChartDemoData();
+            this.PieChartDemoData();
+            this.BarChartDemoData();
+            this.GanttChartDemoData();
+        }
+
+        private void OnSelectedChart(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            if (btn != null)
             {
-                new ChartLine
+                if (btn.Tag.ToString() == "LineChart")
                 {
-                    Title = "Umsatz",
-                    Stroke = Brushes.Red,
-                    Values =
-                    {
-                        new ChartPoint { Category = "2020", Value = 10 },
-                        new ChartPoint { Category = "2021", Value = 30 },
-                        new ChartPoint { Category = "2022", Value = 25 },
-                        new ChartPoint { Category = "2023", Value = 60 },
-                        new ChartPoint { Category = "2024", Value = 45 }
-                    }
-                },
-                                new ChartLine
-                {
-                    Title = "Kosten",
-                    Stroke = Brushes.Blue,
-                    Values =
-                    {
-                        new ChartPoint { Category = "2020", Value = 20 },
-                        new ChartPoint { Category = "2021", Value = 25 },
-                        new ChartPoint { Category = "2022", Value = 35 },
-                        new ChartPoint { Category = "2023", Value = 40 },
-                        new ChartPoint { Category = "2024", Value = 55 }
-                    }
+                    this.ChartTabControl.SelectedIndex = 0;
                 }
-
-            };
-
-            this.PieChartSegments = new List<PieSegment>
-            {
-                new PieSegment { Label="A", Value=30, Fill=Brushes.Red },
-                new PieSegment { Label="B", Value=50, Fill=Brushes.Green },
-                new PieSegment { Label="C", Value=20, Fill=Brushes.Blue }
-            };
-
-            this.BarChartSeries = new List<BarSeries>
-                        {
-                            new BarSeries
-                            {
-                                Title = "Serie A",
-                                Fill = Brushes.SteelBlue,
-                                Values =
-                                {
-                                    new BarChartPoint { X="2020", Y=10 },
-                                    new BarChartPoint { X="2021", Y=20 },
-                                    new BarChartPoint { X="2022", Y=30 },
-                                    new BarChartPoint { X="2023", Y=25 },
-                                    new BarChartPoint { X="2024", Y=30 }
-                                }
-                            },
-                            new BarSeries
-                            {
-                                Title = "Serie B",
-                                Fill = Brushes.Orange,
-                                Values =
-                                {
-                                    new BarChartPoint { X="2020", Y=5 },
-                                    new BarChartPoint { X="2021", Y=15 },
-                                    new BarChartPoint { X="2022", Y=10 },
-                                    new BarChartPoint { X="2023", Y=8 },
-                                    new BarChartPoint { X="2024", Y=12 }
-                                }
-                            }
-                        };
+                else if (btn.Tag.ToString() == "PieChart")
+                {
+                    this.ChartTabControl.SelectedIndex = 1;
+                }
+                else if (btn.Tag.ToString() == "BarChart")
+                {
+                    this.ChartTabControl.SelectedIndex = 2;
+                }
+                else if (btn.Tag.ToString() == "GanttChart")
+                {
+                    this.ChartTabControl.SelectedIndex = 3;
+                }
+            }
         }
 
         private void OnCloseApplication(object sender, RoutedEventArgs e)
@@ -174,6 +149,111 @@ namespace ChartNETDemo
             {
                 e.Cancel = true;
             }
+        }
+
+        private void LineChartDemoData()
+        {
+            this.ChartLines = new ObservableCollection<ChartLine>
+                    {
+                        new ChartLine
+                        {
+                            Title = "Umsatz",
+                            Stroke = Brushes.Red,
+                            Values =
+                            {
+                                new ChartPoint { Category = "2020", Value = 10 },
+                                new ChartPoint { Category = "2021", Value = 30 },
+                                new ChartPoint { Category = "2022", Value = 25 },
+                                new ChartPoint { Category = "2023", Value = 60 },
+                                new ChartPoint { Category = "2024", Value = 45 }
+                            }
+                        },
+                                        new ChartLine
+                        {
+                            Title = "Kosten",
+                            Stroke = Brushes.Blue,
+                            Values =
+                            {
+                                new ChartPoint { Category = "2020", Value = 20 },
+                                new ChartPoint { Category = "2021", Value = 25 },
+                                new ChartPoint { Category = "2022", Value = 35 },
+                                new ChartPoint { Category = "2023", Value = 40 },
+                                new ChartPoint { Category = "2024", Value = 55 }
+                            }
+                        }
+                    };
+        }
+
+        private void PieChartDemoData()
+        {
+            this.PieChartSegments = new List<PieSegment>
+            {
+                new PieSegment { Label="A", Value=30, Fill=Brushes.Red },
+                new PieSegment { Label="B", Value=50, Fill=Brushes.Green },
+                new PieSegment { Label="C", Value=20, Fill=Brushes.Blue },
+                new PieSegment { Label="D", Value=25, Fill=Brushes.Orange }
+            };
+        }
+
+        private void BarChartDemoData()
+        {
+            this.BarChartSeries = new List<BarSeries>
+            {
+                new BarSeries
+                {
+                    Title = "Serie A",
+                    Fill = Brushes.SteelBlue,
+                    Values =
+                    {
+                        new BarChartPoint { X="2020", Y=10 },
+                        new BarChartPoint { X="2021", Y=20 },
+                        new BarChartPoint { X="2022", Y=30 },
+                        new BarChartPoint { X="2023", Y=25 },
+                        new BarChartPoint { X="2024", Y=30 }
+                    }
+                },
+                new BarSeries
+                {
+                    Title = "Serie B",
+                    Fill = Brushes.Orange,
+                    Values =
+                    {
+                        new BarChartPoint { X="2020", Y=5 },
+                        new BarChartPoint { X="2021", Y=15 },
+                        new BarChartPoint { X="2022", Y=10 },
+                        new BarChartPoint { X="2023", Y=8 },
+                        new BarChartPoint { X="2024", Y=12 }
+                    }
+                }
+            };
+        }
+
+        private void GanttChartDemoData()
+        {
+            this.Tasks = new List<GanttTask>
+            {
+                new GanttTask
+                {
+                    Title = "Analyse",
+                    Start = new DateTime(2024, 1, 1),
+                    End   = new DateTime(2024, 1, 15),
+                    Fill  = Brushes.SteelBlue
+                },
+                new GanttTask
+                {
+                    Title = "Implementierung",
+                    Start = new DateTime(2024, 1, 10),
+                    End   = new DateTime(2024, 2, 10),
+                    Fill  = Brushes.Orange
+                },
+                new GanttTask
+                {
+                    Title = "Test",
+                    Start = new DateTime(2024, 2, 1),
+                    End   = new DateTime(2024, 2, 20),
+                    Fill  = Brushes.Green
+                }
+            };
         }
 
         #region INotifyPropertyChanged implementierung

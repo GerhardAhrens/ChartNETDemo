@@ -39,7 +39,8 @@
                 Width="30"
                 Height="30"
                 Margin="5,0,0,0"
-                HorizontalAlignment="Left">
+                HorizontalAlignment="Left"
+                Tag="LineChart">
                 <Image Source="{StaticResource ResourceKey=IconLineChart}" Stretch="None" />
             </Button>
 
@@ -48,7 +49,8 @@
                 Width="30"
                 Height="30"
                 Margin="5,0,0,0"
-                HorizontalAlignment="Left">
+                HorizontalAlignment="Left"
+                Tag="PieChart">
                 <Image Source="{StaticResource ResourceKey=IconPieChart}" Stretch="None" />
             </Button>
 
@@ -57,16 +59,18 @@
                 Width="30"
                 Height="30"
                 Margin="5,0,0,0"
-                HorizontalAlignment="Left">
+                HorizontalAlignment="Left"
+                Tag="BarChart">
                 <Image Source="{StaticResource ResourceKey=IconStackedBarChart}" Stretch="None" />
             </Button>
 
             <Button
-                x:Name="BtnGantChart"
+                x:Name="BtnGanttChart"
                 Width="30"
                 Height="30"
                 Margin="5,0,0,0"
-                HorizontalAlignment="Left">
+                HorizontalAlignment="Left"
+                Tag="GanttChart">
                 <Image Source="{StaticResource ResourceKey=IconGantChart}" Stretch="None" />
             </Button>
         </StackPanel>
@@ -79,49 +83,122 @@
             Fill="Black" />
 
         <Grid Grid.Row="1">
-            <!--
-            <local:LineChartControl
-                x:Name="LineChart"
-                Width="600"
-                Height="400"
-                GridLineBrush="Gainsboro"
-                GridLineThickness="1"
-                HorizontalGridLineCount="4"
-                Lines="{Binding Path=ChartLines}"
-                VerticalGridLineCount="6"
-                XAxisTitle="Zeit (Jahre)"
-                XAxisTitleAlignment="Center"
-                XAxisTitleBrush="DarkBlue"
-                XAxisTitleFontSize="14"
-                YAxisTitle="Umsatz in Tsd €"
-                YAxisTitleAlignment="Center"
-                YAxisTitleBrush="DarkRed"
-                YAxisTitleFontSize="14" />
-            -->
+            <TabControl x:Name="ChartTabControl" SelectedIndex="0">
+                <TabItem Header="Line Chart">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="35" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
 
-            <!--
-            <local:PieChartControl
-                x:Name="MyPieChart"
-                Width="600"
-                Height="400"
-                Segments="{Binding Path=PieChartSegments}" />
-            -->
-            <local:BarChartControl
-                x:Name="MyBarChart"
-                Width="700"
-                Height="400"
-                LegendPosition="Top"
-                Series="{Binding Path=BarChartSeries}"
-                
-                XAxisTitle = "Jahr"
-                XAxisTitleFontSize = "14"
-                XAxisTitleForeground = "Green"
-                
-                YAxisTitle="Umsatz in €"
-                YAxisTitleAlignment="Center"
-                YAxisTitleFontSize="14"
-                YAxisTitleForeground="DarkBlue" />
+                        <StackPanel Orientation="Horizontal">
+                            <Button
+                                Width="100"
+                                Height="35"
+                                Content="Save as PNG" />
+                        </StackPanel>
 
+                        <local:LineChartControl
+                            x:Name="LineChart"
+                            Grid.Row="1"
+                            Width="600"
+                            Height="400"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            GridLineBrush="Gainsboro"
+                            GridLineThickness="1"
+                            HorizontalGridLineCount="4"
+                            Lines="{Binding Path=ChartLines}"
+                            VerticalGridLineCount="6"
+                            XAxisTitle="Zeit (Jahre)"
+                            XAxisTitleAlignment="Center"
+                            XAxisTitleBrush="DarkBlue"
+                            XAxisTitleFontSize="14"
+                            YAxisTitle="Umsatz in Tsd €"
+                            YAxisTitleAlignment="Center"
+                            YAxisTitleBrush="DarkRed"
+                            YAxisTitleFontSize="14" />
+                    </Grid>
+                </TabItem>
+
+                <TabItem Header="Pie Chart">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="35" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Button
+                                Width="100"
+                                Height="35"
+                                Content="Save as PNG" />
+                        </StackPanel>
+
+                        <local:PieChartControl
+                            x:Name="MyPieChart"
+                            Grid.Row="1"
+                            Width="600"
+                            Height="400"
+                            Segments="{Binding Path=PieChartSegments}" />
+                    </Grid>
+                </TabItem>
+
+                <TabItem Header="Bar Chart">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="35" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Button
+                                Width="100"
+                                Height="35"
+                                Content="Save as PNG" />
+                        </StackPanel>
+
+                        <local:BarChartControl
+                            x:Name="MyBarChart"
+                            Grid.Row="1"
+                            Width="700"
+                            Height="400"
+                            LegendPosition="Top"
+                            Series="{Binding Path=BarChartSeries}"
+                            XAxisTitle="Jahr"
+                            XAxisTitleFontSize="14"
+                            XAxisTitleForeground="Green"
+                            YAxisTitle="Umsatz in €"
+                            YAxisTitleAlignment="Center"
+                            YAxisTitleFontSize="14"
+                            YAxisTitleForeground="DarkBlue" />
+                    </Grid>
+                </TabItem>
+
+                <TabItem Header="Gantt Chart">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="35" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Button
+                                Width="100"
+                                Height="35"
+                                Content="Save as PNG" />
+                        </StackPanel>
+
+                        <local:GanttChartControl
+                            x:Name="MyGanttChart"
+                            Grid.Row="1"
+                            Width="600"
+                            Height="400"
+                            Tasks="{Binding Path=Tasks}" />
+
+                    </Grid>
+                </TabItem>
+            </TabControl>
         </Grid>
 
     </Grid>
