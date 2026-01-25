@@ -21,6 +21,8 @@ using System.Windows.Controls;
 using System.Windows.Controls.Ribbon;
 using System.Windows.Media;
 
+using static ChartNETDemo.GanttChartControl;
+
 namespace ChartNETDemo
 {
     /// <summary>
@@ -230,43 +232,57 @@ namespace ChartNETDemo
 
         private void GanttChartDemoData()
         {
-            this.Tasks = new List<GanttTask>
+
+            var taskA = new GanttTask
             {
-                new GanttTask
-                {
-                    Title = "Analyse",
-                    Start = new DateTime(DateTime.Now.Year, 1, 1),
-                    End   = new DateTime(DateTime.Now.Year, 1, 15),
-                    Fill  = Brushes.SteelBlue
-                },
-                new GanttTask
-                {
-                    Title = "Implementierung",
-                    Start = new DateTime(DateTime.Now.Year, 1, 10),
-                    End   = new DateTime(DateTime.Now.Year, 2, 10),
-                    Fill  = Brushes.Orange
-                },
-                new GanttTask
-                {
-                    Title = "Test",
-                    Start = new DateTime(DateTime.Now.Year, 2, 1),
-                    End   = new DateTime(DateTime.Now.Year, 2, 20),
-                    Fill  = Brushes.Green
-                },
-                new GanttTask
-                {
-                    Title = "Dokumentation",
-                    Start = new DateTime(DateTime.Now.Year, 2, 1),
-                    End   = new DateTime(DateTime.Now.Year, 3, 10),
-                    Fill  = Brushes.Yellow
-                },
-                new GanttTask
-                {
-                    Title = "Im Betrieb",
-                    Start = new DateTime(DateTime.Now.Year, 3, 1),
-                    End   = new DateTime(DateTime.Now.Year, 4, 1),
-                    Fill  = Brushes.Red
-                }
+                Title = "Analyse",
+                Start = new DateTime(DateTime.Now.Year, 1, 1),
+                End = new DateTime(DateTime.Now.Year, 1, 15),
+                Fill = Brushes.SteelBlue
+            };
+
+            var taskB = new GanttTask
+            {
+                Title = "Implementierung",
+                Start = new DateTime(DateTime.Now.Year, 1, 10),
+                End = new DateTime(DateTime.Now.Year, 2, 10),
+                Fill = Brushes.Orange
+            };
+
+            var taskC = new GanttTask
+            {
+                Title = "Test",
+                Start = new DateTime(DateTime.Now.Year, 2, 1),
+                End = new DateTime(DateTime.Now.Year, 2, 20),
+                Fill = Brushes.Green
+            };
+
+            var taskD = new GanttTask
+            {
+                Title = "Dokumentation",
+                Start = new DateTime(DateTime.Now.Year, 2, 1),
+                End = new DateTime(DateTime.Now.Year, 3, 10),
+                Fill = Brushes.Yellow
+            };
+
+            var taskE = new GanttTask
+            {
+                Title = "Im Betrieb",
+                Start = new DateTime(DateTime.Now.Year, 3, 1),
+                End = new DateTime(DateTime.Now.Year, 4, 1),
+                Fill = Brushes.Red
+            };
+
+            this.Tasks = new List<GanttTask>();
+            this.Tasks.Add(taskA);
+            this.Tasks.Add(taskB);
+            this.Tasks.Add(taskC);
+            this.Tasks.Add(taskD);
+            this.Tasks.Add(taskE);
+
+            MyGanttChart.Dependencies = new[]
+            {
+                new GanttDependency { From = taskA, To = taskB }
             };
         }
 

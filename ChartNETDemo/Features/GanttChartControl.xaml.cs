@@ -50,6 +50,19 @@
                 typeof(GanttChartControl),
                 new PropertyMetadata(null, (_, __) => ((GanttChartControl)_).Redraw()));
 
+        public IEnumerable<GanttDependency> Dependencies
+        {
+            get => (IEnumerable<GanttDependency>)GetValue(DependenciesProperty);
+            set => SetValue(DependenciesProperty, value);
+        }
+
+        public static readonly DependencyProperty DependenciesProperty =
+            DependencyProperty.Register(
+                nameof(Dependencies),
+                typeof(IEnumerable<GanttDependency>),
+                typeof(GanttChartControl),
+                new PropertyMetadata(null, (_, __) => ((GanttChartControl)_).Redraw()));
+
         #endregion
 
         #region Today Line
@@ -95,6 +108,13 @@
 
         #endregion
 
+        public class GanttDependency
+        {
+            public GanttTask From { get; set; } = null!;
+            public GanttTask To { get; set; } = null!;
+        }
+
+
         #region Rendering
 
         private void Redraw()
@@ -109,6 +129,7 @@
             this.DrawAxes();
             this.DrawYAxisLabels();
             this.DrawTasks();
+            this.DrawDependencies();
             this.DrawTodayLine();
             this.DrawXAxisLabels();
         }
@@ -288,6 +309,91 @@
 
             PART_Canvas.Children.Add(line);
         }
+
+        private Rect GetTaskRect(GanttTask task, int index, DateTime minDate, DateTime maxDate)
+        {
+            double plotWidth = ActualWidth - LeftMargin - RightMargin;
+            double totalDays = (maxDate - minDate).TotalDays;
+
+            double x =
+                LeftMargin +
+                (task.Start - minDate).TotalDays / totalDays * plotWidth;
+
+            double width =
+                (task.End - task.Start).TotalDays / totalDays * plotWidth;
+
+            double y = TopMargin + index * RowHeight + 5;
+
+            return new Rect(x, y, Math.Max(1, width), RowHeight - 10);
+        }
+
+        private void DrawDependencies()
+        {
+            if (Dependencies == null || !Dependencies.Any())
+                return;
+
+            var taskList = Tasks.ToList();
+            DateTime minDate = taskList.Min(t => t.Start);
+            DateTime maxDate = taskList.Max(t => t.End);
+
+            foreach (var dep in Dependencies)
+            {
+                int fromIndex = taskList.IndexOf(dep.From);
+                int toIndex = taskList.IndexOf(dep.To);
+
+                if (fromIndex < 0 || toIndex < 0)
+                    continue;
+
+                Rect fromRect = GetTaskRect(dep.From, fromIndex, minDate, maxDate);
+                Rect toRect = GetTaskRect(dep.To, toIndex, minDate, maxDate);
+
+                // Punkte
+                Point start = new(fromRect.Right, fromRect.Top + fromRect.Height / 2);
+                Point mid1 = new(start.X + 10, start.Y);
+                Point mid2 = new(mid1.X, toRect.Top + toRect.Height / 2);
+                Point end = new(toRect.Left, toRect.Top + toRect.Height / 2);
+
+                // Linie (3 Segmente)
+                DrawLine(start, mid1);
+                DrawLine(mid1, mid2);
+                DrawLine(mid2, end);
+
+                // Pfeilspitze
+                DrawArrowHead(end);
+            }
+        }
+
+        private void DrawLine(Point p1, Point p2)
+        {
+            PART_Canvas.Children.Add(new Line
+            {
+                X1 = p1.X,
+                Y1 = p1.Y,
+                X2 = p2.X,
+                Y2 = p2.Y,
+                Stroke = Brushes.Black,
+                StrokeThickness = 1
+            });
+        }
+
+        private void DrawArrowHead(Point end)
+        {
+            const double size = 6;
+
+            var arrow = new Polygon
+            {
+                Fill = Brushes.Black,
+                Points = new PointCollection
+        {
+            end,
+            new Point(end.X - size, end.Y - size / 2),
+            new Point(end.X - size, end.Y + size / 2)
+        }
+            };
+
+            PART_Canvas.Children.Add(arrow);
+        }
+
 
         #endregion
 
