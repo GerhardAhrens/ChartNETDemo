@@ -65,6 +65,16 @@
             </Button>
 
             <Button
+                x:Name="BtnBarChartH"
+                Width="30"
+                Height="30"
+                Margin="5,0,0,0"
+                HorizontalAlignment="Left"
+                Tag="BarChartH">
+                <Image Source="{StaticResource ResourceKey=IconStackedBarChartHorizontal}" Stretch="None" />
+            </Button>
+
+            <Button
                 x:Name="BtnGanttChart"
                 Width="30"
                 Height="30"
@@ -165,6 +175,36 @@
                             Height="400"
                             LegendPosition="Top"
                             Series="{Binding Path=BarChartSeries}"
+                            XAxisTitle="Jahr"
+                            XAxisTitleFontSize="14"
+                            XAxisTitleForeground="Green"
+                            YAxisTitle="Umsatz in €"
+                            YAxisTitleAlignment="Center"
+                            YAxisTitleFontSize="14"
+                            YAxisTitleForeground="DarkBlue" />
+                    </Grid>
+                </TabItem>
+
+                <TabItem Header="Bar Chart Horizontal">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="35" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Button
+                                Width="100"
+                                Height="35"
+                                Content="Save as PNG" />
+                        </StackPanel>
+
+                        <local:HorizontalBarChartControl
+                            x:Name="MyBarChartHorizontal"
+                            Grid.Row="1"
+                            Width="800"
+                            Height="400"
+                            Series="{Binding Path=BarChartHorizontalSeries}"
                             XAxisTitle="Jahr"
                             XAxisTitleFontSize="14"
                             XAxisTitleForeground="Green"

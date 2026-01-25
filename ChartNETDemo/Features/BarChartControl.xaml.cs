@@ -37,15 +37,13 @@
         private const double RightMargin = 20;
         private const double TopMargin = 20;
         private const double BottomMargin = 60;
-        private const double ChartPadding = 10;
-        private const double YAxisLabelWidth = 45;
 
         public BarChartControl()
         {
             InitializeComponent();
             this.SizeChanged += (_, _) =>
             {
-                Redraw();
+                this.Redraw();
             };
 
             this.Loaded += (_, __) =>
@@ -163,8 +161,8 @@
 
         private void Redraw()
         {
-            PART_Canvas.Children.Clear();
-            PART_Legend.Children.Clear();
+            this.PART_Canvas.Children.Clear();
+            this.PART_Legend.Children.Clear();
 
             if (Series == null || !Series.Any() || ActualWidth <= 0 || ActualHeight <= 0)
             {
@@ -175,7 +173,7 @@
             this.DrawBars();
             this.DrawXAxisLabels();
 
-            if (this.ShowLegend)
+            if (this.ShowLegend == true)
             {
                 this.DrawLegend();
             }
@@ -183,7 +181,7 @@
 
         private void DrawLegend()
         {
-            foreach (var series in Series)
+            foreach (var series in this.Series)
             {
                 var row = new StackPanel
                 {
@@ -212,29 +210,6 @@
 
                 this.PART_Legend.Children.Add(row);
             }
-        }
-
-        private void DrawAxes()
-        {
-            // Y-Achse
-            this.PART_Canvas.Children.Add(new Line
-            {
-                X1 = LeftMargin,
-                Y1 = TopMargin,
-                X2 = LeftMargin,
-                Y2 = ActualHeight - BottomMargin,
-                Stroke = Brushes.Black
-            });
-
-            // X-Achse
-            this.PART_Canvas.Children.Add(new Line
-            {
-                X1 = LeftMargin,
-                Y1 = ActualHeight - BottomMargin,
-                X2 = ActualWidth - RightMargin,
-                Y2 = ActualHeight - BottomMargin,
-                Stroke = Brushes.Black
-            });
         }
 
         private void DrawBars()
@@ -305,7 +280,7 @@
                 return;
             }
 
-            var seriesList = Series.ToList();
+            var seriesList = this.Series.ToList();
             var categories = seriesList.First().Values.Select(v => v.X).ToList();
             if (categories.Count == 0)
             {
@@ -378,10 +353,10 @@
             {
                 var titleBlock = new TextBlock
                 {
-                    Text = YAxisTitle,
-                    FontSize = YAxisTitleFontSize,
-                    Foreground = YAxisTitleForeground,
-                    TextAlignment = YAxisTitleAlignment
+                    Text = this.YAxisTitle,
+                    FontSize = this.YAxisTitleFontSize,
+                    Foreground = this.YAxisTitleForeground,
+                    TextAlignment = this.YAxisTitleAlignment
                 };
 
                 // Rotieren um -90° für vertikalen Titel
@@ -399,7 +374,7 @@
 
         private void DrawXAxisLabels()
         {
-            var categories = Series.First().Values.Select(v => v.X).ToList();
+            var categories = this.Series.First().Values.Select(v => v.X).ToList();
             int count = categories.Count;
 
             double plotWidth = ActualWidth - LeftMargin - RightMargin;
@@ -425,13 +400,13 @@
             }
 
             // X-Achsentitel
-            if (!string.IsNullOrEmpty(XAxisTitle))
+            if (!string.IsNullOrEmpty(this.XAxisTitle))
             {
                 var titleBlock = new TextBlock
                 {
-                    Text = XAxisTitle,
-                    FontSize = XAxisTitleFontSize,
-                    Foreground = XAxisTitleForeground,
+                    Text = this.XAxisTitle,
+                    FontSize = this.XAxisTitleFontSize,
+                    Foreground = this.XAxisTitleForeground,
                     TextAlignment = TextAlignment.Center
                 };
 
@@ -568,23 +543,24 @@
 
         #endregion
 
-        #region Export
-        /// <summary>
-        /// Exportiert das Chart als PNG
-        /// </summary>
-        /// <param name="filePath"></param>
-        public void ExportToPng(string filePath)
+        #region Export als PNG Image
+        public void ExportToPng(string filePath, double dpi = 96)
         {
-            var size = new Size(ActualWidth, ActualHeight);
+            if (this.ActualWidth <= 0 || this.ActualHeight <= 0)
+            {
+                return;
+            }
 
-            Measure(size);
-            Arrange(new Rect(size));
+            // Layout sicherstellen
+            Measure(new Size(this.ActualWidth, this.ActualHeight));
+            Arrange(new Rect(new Size(this.ActualWidth, this.ActualHeight)));
             UpdateLayout();
 
             var rtb = new RenderTargetBitmap(
-                (int)size.Width,
-                (int)size.Height,
-                96, 96,
+                (int)(this.ActualWidth * dpi / 96.0),
+                (int)(this.ActualHeight * dpi / 96.0),
+                dpi,
+                dpi,
                 PixelFormats.Pbgra32);
 
             rtb.Render(this);
@@ -592,9 +568,9 @@
             var encoder = new PngBitmapEncoder();
             encoder.Frames.Add(BitmapFrame.Create(rtb));
 
-            using var fs = System.IO.File.Create(filePath);
+            using System.IO.FileStream fs = new System.IO.FileStream(filePath, System.IO.FileMode.Create);
             encoder.Save(fs);
         }
-        #endregion Export
+        #endregion Export als PNG Image
     }
 }

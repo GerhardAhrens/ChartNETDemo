@@ -54,7 +54,8 @@
 
         public LineChartControl()
         {
-            InitializeComponent();
+            this.InitializeComponent();
+            SizeChanged += (_, _) => this.Redraw();
         }
 
         #region Dependency Properties
@@ -259,15 +260,15 @@
 
         private void Redraw()
         {
-            ChartCanvas.Children.Clear();
+            this.ChartCanvas.Children.Clear();
 
-            if (Lines == null || Lines.Count == 0)
+            if (this.Lines == null || this.Lines.Count == 0)
             {
                 return;
             }
 
-            double width = ChartCanvas.ActualWidth;
-            double height = ChartCanvas.ActualHeight;
+            double width = this.ChartCanvas.ActualWidth;
+            double height = this.ChartCanvas.ActualHeight;
 
             if (width <= 0 || height <= 0)
             {
@@ -300,16 +301,16 @@
 
         private void DrawXAxisTitle(double plotWidth, double plotHeight)
         {
-            if (string.IsNullOrWhiteSpace(XAxisTitle))
+            if (string.IsNullOrWhiteSpace(this.XAxisTitle))
             {
                 return;
             }
 
             var text = new TextBlock
             {
-                Text = XAxisTitle,
-                Foreground = XAxisTitleBrush,
-                FontSize = XAxisTitleFontSize,
+                Text = this.XAxisTitle,
+                Foreground = this.XAxisTitleBrush,
+                FontSize = this.XAxisTitleFontSize,
                 FontWeight = FontWeights.SemiBold
             };
 
@@ -325,19 +326,19 @@
             Canvas.SetLeft(text, x);
             Canvas.SetTop(text, TopMargin + plotHeight + BottomMargin - text.DesiredSize.Height);
 
-            ChartCanvas.Children.Add(text);
+            this.ChartCanvas.Children.Add(text);
         }
 
         private void DrawYAxisTitle(double plotHeight)
         {
-            if (string.IsNullOrWhiteSpace(YAxisTitle))
+            if (string.IsNullOrWhiteSpace(this.YAxisTitle))
             {
                 return;
             }
 
             var text = new TextBlock
             {
-                Text = YAxisTitle,
+                Text = this.YAxisTitle,
                 Foreground = YAxisTitleBrush,
                 FontSize = YAxisTitleFontSize,
                 FontWeight = FontWeights.SemiBold,
@@ -476,8 +477,8 @@
 
         private void DrawLines(double plotWidth, double plotHeight)
         {
-            double min = Lines.SelectMany(l => l.Values).Min(p => p.Value);
-            double max = Lines.SelectMany(l => l.Values).Max(p => p.Value);
+            double min = this.Lines.SelectMany(l => l.Values).Min(p => p.Value);
+            double max = this.Lines.SelectMany(l => l.Values).Max(p => p.Value);
 
             if (Math.Abs(max - min) < double.Epsilon)
             {
@@ -511,23 +512,24 @@
 
         #endregion
 
-        #region Export
-        /// <summary>
-        /// Exportiert das Chart als PNG
-        /// </summary>
-        /// <param name="filePath"></param>
-        public void ExportToPng(string filePath)
+        #region Export als PNG Image
+        public void ExportToPng(string filePath, double dpi = 96)
         {
-            var size = new Size(ActualWidth, ActualHeight);
+            if (this.ActualWidth <= 0 || this.ActualHeight <= 0)
+            {
+                return;
+            }
 
-            Measure(size);
-            Arrange(new Rect(size));
+            // Layout sicherstellen
+            Measure(new Size(this.ActualWidth, this.ActualHeight));
+            Arrange(new Rect(new Size(this.ActualWidth, this.ActualHeight)));
             UpdateLayout();
 
             var rtb = new RenderTargetBitmap(
-                (int)size.Width,
-                (int)size.Height,
-                96, 96,
+                (int)(this.ActualWidth * dpi / 96.0),
+                (int)(this.ActualHeight * dpi / 96.0),
+                dpi,
+                dpi,
                 PixelFormats.Pbgra32);
 
             rtb.Render(this);
@@ -535,9 +537,9 @@
             var encoder = new PngBitmapEncoder();
             encoder.Frames.Add(BitmapFrame.Create(rtb));
 
-            using var fs = File.Create(filePath);
+            using System.IO.FileStream fs = new System.IO.FileStream(filePath, System.IO.FileMode.Create);
             encoder.Save(fs);
         }
-        #endregion Export
+        #endregion Export als PNG Image
     }
 }

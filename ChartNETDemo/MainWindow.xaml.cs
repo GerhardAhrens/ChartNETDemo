@@ -82,6 +82,16 @@ namespace ChartNETDemo
             }
         }
 
+        public List<HorizontalBarSeries> BarChartHorizontalSeries
+        {
+            get;
+            set
+            {
+                field = value;
+                this.OnPropertyChanged();
+            }
+        }
+
         public List<GanttTask> Tasks
         {
             get;
@@ -98,11 +108,13 @@ namespace ChartNETDemo
             WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnLineChart, "Click", this.OnSelectedChart);
             WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnPieChart, "Click", this.OnSelectedChart);
             WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnBarChart, "Click", this.OnSelectedChart);
+            WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnBarChartH, "Click", this.OnSelectedChart);
             WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnGanttChart, "Click", this.OnSelectedChart);
 
             this.LineChartDemoData();
             this.PieChartDemoData();
             this.BarChartDemoData();
+            this.BarChartHorizontalDemoData();
             this.GanttChartDemoData();
         }
 
@@ -123,9 +135,13 @@ namespace ChartNETDemo
                 {
                     this.ChartTabControl.SelectedIndex = 2;
                 }
-                else if (btn.Tag.ToString() == "GanttChart")
+                else if (btn.Tag.ToString() == "BarChartH")
                 {
                     this.ChartTabControl.SelectedIndex = 3;
+                }
+                else if (btn.Tag.ToString() == "GanttChart")
+                {
+                    this.ChartTabControl.SelectedIndex = 4;
                 }
             }
         }
@@ -230,6 +246,39 @@ namespace ChartNETDemo
             };
         }
 
+        private void BarChartHorizontalDemoData()
+        {
+            this.BarChartHorizontalSeries = new List<HorizontalBarSeries>
+            {
+                new HorizontalBarSeries
+                {
+                    Title = "Serie A",
+                    Fill = Brushes.SteelBlue,
+                    Values =
+                    {
+                        new HorizontalBarChartPoint { Y="2020", X=10 },
+                        new HorizontalBarChartPoint { Y="2021", X=20 },
+                        new HorizontalBarChartPoint { Y="2022", X=30 },
+                        new HorizontalBarChartPoint { Y="2023", X=25 },
+                        new HorizontalBarChartPoint { Y="2024", X=30 }
+                    }
+                },
+                new HorizontalBarSeries
+                {
+                    Title = "Serie B",
+                    Fill = Brushes.Orange,
+                    Values =
+                    {
+                        new HorizontalBarChartPoint { Y="2020", X=5 },
+                        new HorizontalBarChartPoint { Y="2021", X=15 },
+                        new HorizontalBarChartPoint { Y="2022", X=10 },
+                        new HorizontalBarChartPoint { Y="2023", X=8 },
+                        new HorizontalBarChartPoint { Y="2024", X=12 }
+                    }
+                }
+            };
+        }
+
         private void GanttChartDemoData()
         {
 
@@ -282,7 +331,9 @@ namespace ChartNETDemo
 
             MyGanttChart.Dependencies = new[]
             {
-                new GanttDependency { From = taskA, To = taskB }
+                new GanttDependency { From = taskA, To = taskB },
+                new GanttDependency { From = taskB, To = taskC }, 
+                new GanttDependency { From = taskC, To = taskE },
             };
         }
 

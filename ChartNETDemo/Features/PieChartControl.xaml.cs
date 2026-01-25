@@ -23,8 +23,8 @@
     {
         public PieChartControl()
         {
-            InitializeComponent();
-            SizeChanged += (_, _) => Redraw();
+            this.InitializeComponent();
+            this.SizeChanged += (_, _) => this.Redraw();
         }
 
         #region DependencyProperty
@@ -50,33 +50,33 @@
         {
             PART_Canvas.Children.Clear();
 
-            if (Segments == null || !Segments.Any() || ActualWidth <= 0 || ActualHeight <= 0)
+            if (this.Segments == null || this.Segments.Any() == false || this.ActualWidth <= 0 || this.ActualHeight <= 0)
                 return;
 
-            double centerX = ActualWidth / 2 - 80; // Platz für Legende
-            double centerY = ActualHeight / 2;
+            double centerX = this.ActualWidth / 2 - 80; // Platz für Legende
+            double centerY = this.ActualHeight / 2;
             double radius = Math.Min(centerX, centerY) - 10;
 
-            double total = Segments.Sum(s => s.Value);
+            double total = this.Segments.Sum(s => s.Value);
             if (total == 0) return;
 
             double startAngle = 0;
 
-            foreach (var segment in Segments)
+            foreach (var segment in this.Segments)
             {
                 double sweepAngle = segment.Value / total * 360;
 
                 // Segment
                 var path = CreatePieSlice(centerX, centerY, radius, startAngle, sweepAngle, segment.Fill);
-                PART_Canvas.Children.Add(path);
+                this.PART_Canvas.Children.Add(path);
 
                 // Label
-                AddSegmentLabel(centerX, centerY, radius, startAngle, sweepAngle, segment, total);
+                this.AddSegmentLabel(centerX, centerY, radius, startAngle, sweepAngle, segment, total);
 
                 startAngle += sweepAngle;
             }
 
-            DrawLegend(centerX * 2 + 20, 20, 100);
+            this.DrawLegend(centerX * 2 + 20, 20, 100);
         }
 
         private static Path CreatePieSlice(double cx, double cy, double r, double startAngle, double sweepAngle, Brush fill)
@@ -143,7 +143,7 @@
             Canvas.SetLeft(text, x - text.DesiredSize.Width / 2);
             Canvas.SetTop(text, y - text.DesiredSize.Height / 2);
 
-            PART_Canvas.Children.Add(text);
+            this.PART_Canvas.Children.Add(text);
         }
 
         private void DrawLegend(double startX, double startY, double width)
@@ -153,7 +153,7 @@
             const double lineHeight = boxSize + spacing;
 
             int i = 0;
-            foreach (var segment in Segments)
+            foreach (var segment in this.Segments)
             {
                 // Farbkasten
                 var rect = new Rectangle
@@ -167,7 +167,7 @@
 
                 Canvas.SetLeft(rect, startX);
                 Canvas.SetTop(rect, startY + i * lineHeight);
-                PART_Canvas.Children.Add(rect);
+                this.PART_Canvas.Children.Add(rect);
 
                 // Label
                 var text = new TextBlock
@@ -178,7 +178,7 @@
                 text.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
                 Canvas.SetLeft(text, startX + boxSize + spacing);
                 Canvas.SetTop(text, startY + i * lineHeight + (boxSize - text.DesiredSize.Height) / 2);
-                PART_Canvas.Children.Add(text);
+                this.PART_Canvas.Children.Add(text);
 
                 i++;
             }
@@ -186,23 +186,24 @@
 
         #endregion
 
-        #region Export
-        /// <summary>
-        /// Exportiert das Chart als PNG
-        /// </summary>
-        /// <param name="filePath"></param>
-        public void ExportToPng(string filePath)
+        #region Export als PNG Image
+        public void ExportToPng(string filePath, double dpi = 96)
         {
-            var size = new Size(ActualWidth, ActualHeight);
+            if (this.ActualWidth <= 0 || this.ActualHeight <= 0)
+            {
+                return;
+            }
 
-            Measure(size);
-            Arrange(new Rect(size));
+            // Layout sicherstellen
+            Measure(new Size(this.ActualWidth, this.ActualHeight));
+            Arrange(new Rect(new Size(this.ActualWidth, this.ActualHeight)));
             UpdateLayout();
 
             var rtb = new RenderTargetBitmap(
-                (int)size.Width,
-                (int)size.Height,
-                96, 96,
+                (int)(this.ActualWidth * dpi / 96.0),
+                (int)(this.ActualHeight * dpi / 96.0),
+                dpi,
+                dpi,
                 PixelFormats.Pbgra32);
 
             rtb.Render(this);
@@ -210,9 +211,9 @@
             var encoder = new PngBitmapEncoder();
             encoder.Frames.Add(BitmapFrame.Create(rtb));
 
-            using var fs = System.IO.File.Create(filePath);
+            using System.IO.FileStream fs = new System.IO.FileStream(filePath, System.IO.FileMode.Create);
             encoder.Save(fs);
         }
-        #endregion Export
+        #endregion Export als PNG Image
     }
 }

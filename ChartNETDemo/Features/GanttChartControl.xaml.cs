@@ -23,16 +23,16 @@
     /// </summary>
     public partial class GanttChartControl : UserControl
     {
-        private const double LeftMargin = 120;
-        private const double RightMargin = 20;
-        private const double TopMargin = 20;
-        private const double BottomMargin = 60;
-        private const double RowHeight = 30;
+        private const double LEFTMARGIN = 120;
+        private const double RIGHTMARGIN = 20;
+        private const double TOPMARGIN = 20;
+        private const double BOTTOMMARGIN = 60;
+        private const double ROWHEIGHT = 30;
 
         public GanttChartControl()
         {
-            InitializeComponent();
-            SizeChanged += (_, _) => Redraw();
+            this.InitializeComponent();
+            this.SizeChanged += (_, _) => this.Redraw();
         }
 
         #region DependencyProperty
@@ -121,7 +121,7 @@
         {
             PART_Canvas.Children.Clear();
 
-            if (Tasks == null || Tasks.Any() == false)
+            if (this.Tasks == null || this.Tasks.Any() == false)
             {
                 return;
             }
@@ -139,23 +139,23 @@
         /// </summary>
         private void DrawAxes()
         {
-            double height = ActualHeight - BottomMargin;
+            double height = ActualHeight - BOTTOMMARGIN;
 
             // Y-Achse
-            PART_Canvas.Children.Add(new Line
+            this.PART_Canvas.Children.Add(new Line
             {
-                X1 = LeftMargin,
-                X2 = LeftMargin,
-                Y1 = TopMargin,
+                X1 = LEFTMARGIN,
+                X2 = LEFTMARGIN,
+                Y1 = TOPMARGIN,
                 Y2 = height,
                 Stroke = Brushes.Black
             });
 
             // X-Achse
-            PART_Canvas.Children.Add(new Line
+            this.PART_Canvas.Children.Add(new Line
             {
-                X1 = LeftMargin,
-                X2 = ActualWidth - RightMargin,
+                X1 = LEFTMARGIN,
+                X2 = ActualWidth - RIGHTMARGIN,
                 Y1 = height,
                 Y2 = height,
                 Stroke = Brushes.Black
@@ -167,7 +167,7 @@
         /// </summary>
         private void DrawYAxisLabels()
         {
-            var taskList = Tasks.ToList();
+            var taskList = this.Tasks.ToList();
 
             for (int i = 0; i < taskList.Count; i++)
             {
@@ -178,8 +178,8 @@
                 };
 
                 Canvas.SetLeft(label, 10);
-                Canvas.SetTop(label, TopMargin + i * RowHeight + 5);
-                PART_Canvas.Children.Add(label);
+                Canvas.SetTop(label, TOPMARGIN + i * ROWHEIGHT + 5);
+                this.PART_Canvas.Children.Add(label);
             }
         }
 
@@ -194,25 +194,22 @@
             DateTime maxDate = taskList.Max(t => t.End);
 
             double totalDays = (maxDate - minDate).TotalDays;
-            double plotWidth = ActualWidth - LeftMargin - RightMargin;
+            double plotWidth = ActualWidth - LEFTMARGIN - RIGHTMARGIN;
 
             for (int i = 0; i < taskList.Count; i++)
             {
                 var task = taskList[i];
 
-                double x =
-                    LeftMargin +
-                    (task.Start - minDate).TotalDays / totalDays * plotWidth;
+                double x = LEFTMARGIN + (task.Start - minDate).TotalDays / totalDays * plotWidth;
 
-                double width =
-                    (task.End - task.Start).TotalDays / totalDays * plotWidth;
+                double width = (task.End - task.Start).TotalDays / totalDays * plotWidth;
 
-                double y = TopMargin + i * RowHeight + 5;
+                double y = TOPMARGIN + i * ROWHEIGHT + 5;
 
                 var rect = new Rectangle
                 {
                     Width = Math.Max(1, width),
-                    Height = RowHeight - 10,
+                    Height = ROWHEIGHT - 10,
                     Fill = task.Fill,
                     RadiusX = 3,
                     RadiusY = 3
@@ -220,7 +217,7 @@
 
                 Canvas.SetLeft(rect, x);
                 Canvas.SetTop(rect, y);
-                PART_Canvas.Children.Add(rect);
+                this.PART_Canvas.Children.Add(rect);
             }
         }
 
@@ -235,18 +232,17 @@
             DateTime maxDate = taskList.Max(t => t.End);
 
             int tickCount = 5;
-            double plotWidth = ActualWidth - LeftMargin - RightMargin;
-            double y = ActualHeight - BottomMargin;
+            double plotWidth = ActualWidth - LEFTMARGIN - RIGHTMARGIN;
+            double y = ActualHeight - BOTTOMMARGIN;
 
             for (int i = 0; i <= tickCount; i++)
             {
-                DateTime date =
-                    minDate.AddDays((maxDate - minDate).TotalDays * i / tickCount);
+                DateTime date = minDate.AddDays((maxDate - minDate).TotalDays * i / tickCount);
 
-                double x = LeftMargin + plotWidth * i / tickCount;
+                double x = LEFTMARGIN + plotWidth * i / tickCount;
 
                 // Tick
-                PART_Canvas.Children.Add(new Line
+                this.PART_Canvas.Children.Add(new Line
                 {
                     X1 = x,
                     X2 = x,
@@ -258,22 +254,23 @@
                 // Label
                 var label = new TextBlock
                 {
-                    Text = date.ToString("dd.MM.yyyy", CultureInfo.CurrentCulture),
-                    FontSize = 11
+                    Text = date.ToString("dd.MM.yyyy", CultureInfo.CurrentCulture), FontSize = 11
                 };
 
                 label.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
                 Canvas.SetLeft(label, x - label.DesiredSize.Width / 2);
                 Canvas.SetTop(label, y + 8);
 
-                PART_Canvas.Children.Add(label);
+                this.PART_Canvas.Children.Add(label);
             }
         }
 
         private void DrawTodayLine()
         {
-            if (!ShowTodayLine || Tasks == null || !Tasks.Any())
+            if (this.ShowTodayLine == false || this.Tasks == null || this.Tasks.Any() == false)
+            {
                 return;
+            }
 
             var taskList = Tasks.ToList();
 
@@ -283,54 +280,55 @@
 
             // Nur anzeigen, wenn Heute im Bereich liegt
             if (today < minDate || today > maxDate)
+            {
                 return;
+            }
 
-            double plotWidth = ActualWidth - LeftMargin - RightMargin;
-            double plotHeight = ActualHeight - BottomMargin;
+            double plotWidth = ActualWidth - LEFTMARGIN - RIGHTMARGIN;
+            double plotHeight = ActualHeight - BOTTOMMARGIN;
 
             double totalDays = (maxDate - minDate).TotalDays;
             if (totalDays <= 0)
+            {
                 return;
+            }
 
-            double x =
-                LeftMargin +
-                (today - minDate).TotalDays / totalDays * plotWidth;
+            double x = LEFTMARGIN + (today - minDate).TotalDays / totalDays * plotWidth;
 
             var line = new Line
             {
                 X1 = x,
                 X2 = x,
-                Y1 = TopMargin,
+                Y1 = TOPMARGIN,
                 Y2 = plotHeight,
                 Stroke = TodayLineBrush,
                 StrokeThickness = TodayLineThickness,
                 StrokeDashArray = new DoubleCollection { 4, 4 } // gestrichelt
             };
 
-            PART_Canvas.Children.Add(line);
+            this.PART_Canvas.Children.Add(line);
         }
 
         private Rect GetTaskRect(GanttTask task, int index, DateTime minDate, DateTime maxDate)
         {
-            double plotWidth = ActualWidth - LeftMargin - RightMargin;
+            double plotWidth = ActualWidth - LEFTMARGIN - RIGHTMARGIN;
             double totalDays = (maxDate - minDate).TotalDays;
 
-            double x =
-                LeftMargin +
-                (task.Start - minDate).TotalDays / totalDays * plotWidth;
+            double x = LEFTMARGIN + (task.Start - minDate).TotalDays / totalDays * plotWidth;
 
-            double width =
-                (task.End - task.Start).TotalDays / totalDays * plotWidth;
+            double width = (task.End - task.Start).TotalDays / totalDays * plotWidth;
 
-            double y = TopMargin + index * RowHeight + 5;
+            double y = TOPMARGIN + index * ROWHEIGHT + 5;
 
-            return new Rect(x, y, Math.Max(1, width), RowHeight - 10);
+            return new Rect(x, y, Math.Max(1, width), ROWHEIGHT - 10);
         }
 
         private void DrawDependencies()
         {
-            if (Dependencies == null || !Dependencies.Any())
+            if (this.Dependencies == null || this.Dependencies.Any() == false)
+            {
                 return;
+            }
 
             var taskList = Tasks.ToList();
             DateTime minDate = taskList.Min(t => t.Start);
@@ -342,7 +340,9 @@
                 int toIndex = taskList.IndexOf(dep.To);
 
                 if (fromIndex < 0 || toIndex < 0)
+                {
                     continue;
+                }
 
                 Rect fromRect = GetTaskRect(dep.From, fromIndex, minDate, maxDate);
                 Rect toRect = GetTaskRect(dep.To, toIndex, minDate, maxDate);
@@ -354,18 +354,18 @@
                 Point end = new(toRect.Left, toRect.Top + toRect.Height / 2);
 
                 // Linie (3 Segmente)
-                DrawLine(start, mid1);
-                DrawLine(mid1, mid2);
-                DrawLine(mid2, end);
+                this.DrawLine(start, mid1);
+                this.DrawLine(mid1, mid2);
+                this.DrawLine(mid2, end);
 
                 // Pfeilspitze
-                DrawArrowHead(end);
+                this.DrawArrowHead(end);
             }
         }
 
         private void DrawLine(Point p1, Point p2)
         {
-            PART_Canvas.Children.Add(new Line
+            this.PART_Canvas.Children.Add(new Line
             {
                 X1 = p1.X,
                 Y1 = p1.Y,
@@ -384,16 +384,15 @@
             {
                 Fill = Brushes.Black,
                 Points = new PointCollection
-        {
-            end,
-            new Point(end.X - size, end.Y - size / 2),
-            new Point(end.X - size, end.Y + size / 2)
-        }
+                {
+                    end,
+                    new Point(end.X - size, end.Y - size / 2),
+                    new Point(end.X - size, end.Y + size / 2)
+                }
             };
 
-            PART_Canvas.Children.Add(arrow);
+            this.PART_Canvas.Children.Add(arrow);
         }
-
 
         #endregion
 
@@ -422,9 +421,9 @@
             var encoder = new PngBitmapEncoder();
             encoder.Frames.Add(BitmapFrame.Create(rtb));
 
-            using FileStream fs = new FileStream(filePath, FileMode.Create);
+            using System.IO.FileStream fs = new System.IO.FileStream(filePath, System.IO.FileMode.Create);
             encoder.Save(fs);
         }
-        #endregion
+        #endregion Export als PNG Image
     }
 }
