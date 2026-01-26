@@ -75,6 +75,16 @@
             </Button>
 
             <Button
+                x:Name="BtnColumnChart"
+                Width="30"
+                Height="30"
+                Margin="5,0,0,0"
+                HorizontalAlignment="Left"
+                Tag="ColumnChart">
+                <Image Source="{StaticResource ResourceKey=IconColumnChart}" Stretch="None" />
+            </Button>
+
+            <Button
                 x:Name="BtnGanttChart"
                 Width="30"
                 Height="30"
@@ -213,6 +223,29 @@
                             YAxisTitleAlignment="Center"
                             YAxisTitleFontSize="14"
                             YAxisTitleForeground="DarkBlue" />
+                    </Grid>
+                </TabItem>
+
+                <TabItem Header="Column Chart">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="35" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Button
+                                Width="100"
+                                Height="35"
+                                Content="Save as PNG" />
+                        </StackPanel>
+
+                        <local:ColumnChartControl
+                            x:Name="MyColumnChart"
+                            Grid.Row="1"
+                            Width="800"
+                            Height="400"
+                            Series="{Binding Path=ColumnChartSeries, UpdateSourceTrigger=PropertyChanged}" />
                     </Grid>
                 </TabItem>
 

@@ -92,6 +92,16 @@ namespace ChartNETDemo
             }
         }
 
+        public List<ColumnChartSeries> ColumnChartSeries
+        {
+            get;
+            set
+            {
+                field = value;
+                this.OnPropertyChanged();
+            }
+        }
+
         public List<GanttTask> Tasks
         {
             get;
@@ -109,12 +119,14 @@ namespace ChartNETDemo
             WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnPieChart, "Click", this.OnSelectedChart);
             WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnBarChart, "Click", this.OnSelectedChart);
             WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnBarChartH, "Click", this.OnSelectedChart);
+            WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnColumnChart, "Click", this.OnSelectedChart);
             WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnGanttChart, "Click", this.OnSelectedChart);
 
             this.LineChartDemoData();
             this.PieChartDemoData();
             this.BarChartDemoData();
             this.BarChartHorizontalDemoData();
+            this.ColumnChartDemoData();
             this.GanttChartDemoData();
         }
 
@@ -139,9 +151,13 @@ namespace ChartNETDemo
                 {
                     this.ChartTabControl.SelectedIndex = 3;
                 }
-                else if (btn.Tag.ToString() == "GanttChart")
+                else if (btn.Tag.ToString() == "ColumnChart")
                 {
                     this.ChartTabControl.SelectedIndex = 4;
+                }
+                else if (btn.Tag.ToString() == "GanttChart")
+                {
+                    this.ChartTabControl.SelectedIndex = 5;
                 }
             }
         }
@@ -277,6 +293,35 @@ namespace ChartNETDemo
                     }
                 }
             };
+        }
+
+        private void ColumnChartDemoData()
+        {
+            ColumnChartSeries = new List<ColumnChartSeries>
+            {
+                new ColumnChartSeries
+                {
+                    Title = "Serie A",
+                    Fill = Brushes.SteelBlue,
+                    Values =
+                    {
+                        new() { X = "2020", Y = 10 },
+                        new() { X = "2021", Y = 30 },
+                        new() { X = "2022", Y = 25 }
+                    }
+                },
+                new ColumnChartSeries
+                {
+                    Title = "Serie B",
+                    Fill = Brushes.Orange,
+                    Values =
+                    {
+                        new() { X = "2020", Y = 15 },
+                        new() { X = "2021", Y = 20 },
+                        new() { X = "2022", Y = 35 }
+                    }
+                }
+            };        
         }
 
         private void GanttChartDemoData()
