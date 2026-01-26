@@ -10,12 +10,18 @@
     using System.Windows.Media.Imaging;
     using System.Windows.Shapes;
 
-    public class GanttTask
+    public sealed class GanttTask
     {
         public string Title { get; set; } = "";
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
         public Brush Fill { get; set; } = Brushes.SteelBlue;
+    }
+
+    public sealed class GanttDependency
+    {
+        public GanttTask From { get; set; } = null!;
+        public GanttTask To { get; set; } = null!;
     }
 
     /// <summary>
@@ -107,13 +113,6 @@
                 new PropertyMetadata(2.0, (_, __) => ((GanttChartControl)_).Redraw()));
 
         #endregion
-
-        public class GanttDependency
-        {
-            public GanttTask From { get; set; } = null!;
-            public GanttTask To { get; set; } = null!;
-        }
-
 
         #region Rendering
 

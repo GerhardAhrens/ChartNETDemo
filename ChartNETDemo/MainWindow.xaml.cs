@@ -13,18 +13,16 @@
 // </summary>
 //-----------------------------------------------------------------------
 
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Ribbon;
-using System.Windows.Media;
-
-using static ChartNETDemo.GanttChartControl;
-
 namespace ChartNETDemo
 {
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using System.IO;
+    using System.Runtime.CompilerServices;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Media;
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -38,9 +36,18 @@ namespace ChartNETDemo
             WeakEventManager<Window, RoutedEventArgs>.AddHandler(this, "Loaded", this.OnLoaded);
             WeakEventManager<Window, CancelEventArgs>.AddHandler(this, "Closing", this.OnWindowClosing);
 
-            this.WindowTitel = "Minimal WPF Template";
+            string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            this.DemoDataPath = Path.Combine(new DirectoryInfo(currentDirectory).Parent.Parent.Parent.FullName, "DemoData");
+            if (Directory.Exists(this.DemoDataPath) == false)
+            {
+                Directory.CreateDirectory(this.DemoDataPath);
+            }
+
+            this.WindowTitel = "Chart WPF Demo";
             this.DataContext = this;
         }
+
+        public string DemoDataPath { get; private set; }
 
         public string WindowTitel
         {
@@ -122,6 +129,8 @@ namespace ChartNETDemo
             WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnColumnChart, "Click", this.OnSelectedChart);
             WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnGanttChart, "Click", this.OnSelectedChart);
 
+            WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnSaveToPng, "Click", this.OnChartSave);
+
             this.LineChartDemoData();
             this.PieChartDemoData();
             this.BarChartDemoData();
@@ -162,6 +171,44 @@ namespace ChartNETDemo
             }
         }
 
+        private void OnChartSave(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            if (btn != null)
+            {
+                if (this.ChartTabControl.SelectedIndex == 0)
+                {
+                    string demoDataImage = Path.Combine(this.DemoDataPath, "LineChartDemo.png");
+                    this.LineChart.ExportToPng(demoDataImage);
+                }
+                else if (this.ChartTabControl.SelectedIndex == 1)
+                {
+                    string demoDataImage = Path.Combine(this.DemoDataPath, "PieChartDemo.png");
+                    this.MyPieChart.ExportToPng(demoDataImage);
+                }
+                else if (this.ChartTabControl.SelectedIndex == 2)
+                {
+                    string demoDataImage = Path.Combine(this.DemoDataPath, "BarChartDemo.png");
+                    this.MyBarChart.ExportToPng(demoDataImage);
+                }
+                else if (this.ChartTabControl.SelectedIndex == 3)
+                {
+                    string demoDataImage = Path.Combine(this.DemoDataPath, "BarChartHorizontalDemo.png");
+                    this.MyBarChartHorizontal.ExportToPng(demoDataImage);
+                }
+                else if (this.ChartTabControl.SelectedIndex == 4)
+                {
+                    string demoDataImage = Path.Combine(this.DemoDataPath, "ColumnChartDemo.png");
+                    this.MyColumnChart.ExportToPng(demoDataImage);
+                }
+                else if (this.ChartTabControl.SelectedIndex == 5)
+                {
+                    string demoDataImage = Path.Combine(this.DemoDataPath, "GanttChartDemo.png");
+                    this.MyGanttChart.ExportToPng(demoDataImage);
+                }
+            }
+        }
+
         private void OnCloseApplication(object sender, RoutedEventArgs e)
         {
             this.Close();
@@ -174,7 +221,6 @@ namespace ChartNETDemo
             MessageBoxResult msgYN = MessageBox.Show("Wollen Sie die Anwendung beenden?", "Beenden", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (msgYN == MessageBoxResult.Yes)
             {
-                //this.LineChart.ExportToPng(@"c:\temp\demo.png");
                 //this.MyPieChart.ExportToPng(@"c:\temp\demo.png");
 
                 App.ApplicationExit();
@@ -319,6 +365,17 @@ namespace ChartNETDemo
                         new() { X = "2020", Y = 15 },
                         new() { X = "2021", Y = 20 },
                         new() { X = "2022", Y = 35 }
+                    }
+                },
+                new ColumnChartSeries
+                {
+                    Title = "Serie C",
+                    Fill = Brushes.Green,
+                    Values =
+                    {
+                        new() { X = "2020", Y = 12 },
+                        new() { X = "2021", Y = 18 },
+                        new() { X = "2022", Y = 39 }
                     }
                 }
             };        

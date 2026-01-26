@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="DemoData\" />
     <Folder Include="Resources\Application\" />
     <Folder Include="Resources\Style\" />
   </ItemGroup>

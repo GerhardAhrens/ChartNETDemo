@@ -93,6 +93,15 @@
                 Tag="GanttChart">
                 <Image Source="{StaticResource ResourceKey=IconGantChart}" Stretch="None" />
             </Button>
+
+            <Button
+                x:Name="BtnSaveToPng"
+                Width="30"
+                Height="30"
+                Margin="150,0,0,0"
+                HorizontalAlignment="Right">
+                <Image Source="{StaticResource ResourceKey=IconSaveToPng}" Stretch="None" />
+            </Button>
         </StackPanel>
 
         <Rectangle
@@ -107,24 +116,14 @@
                 <TabItem Header="Line Chart">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="35" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
-                        <StackPanel Orientation="Horizontal">
-                            <Button
-                                Width="100"
-                                Height="35"
-                                Content="Save as PNG" />
-                        </StackPanel>
-
                         <local:LineChartControl
                             x:Name="LineChart"
-                            Grid.Row="1"
+                            Grid.Row="0"
                             Width="800"
                             Height="400"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
                             GridLineBrush="Gainsboro"
                             GridLineThickness="1"
                             HorizontalGridLineCount="4"
@@ -144,16 +143,8 @@
                 <TabItem Header="Pie Chart">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="35" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
-
-                        <StackPanel Orientation="Horizontal">
-                            <Button
-                                Width="100"
-                                Height="35"
-                                Content="Save as PNG" />
-                        </StackPanel>
 
                         <local:PieChartControl
                             x:Name="MyPieChart"
@@ -167,20 +158,12 @@
                 <TabItem Header="Bar Chart">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="35" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
-                        <StackPanel Orientation="Horizontal">
-                            <Button
-                                Width="100"
-                                Height="35"
-                                Content="Save as PNG" />
-                        </StackPanel>
-
                         <local:BarChartControl
                             x:Name="MyBarChart"
-                            Grid.Row="1"
+                            Grid.Row="0"
                             Width="800"
                             Height="400"
                             LegendPosition="Top"
@@ -198,20 +181,12 @@
                 <TabItem Header="Bar Chart Horizontal">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="35" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
-                        <StackPanel Orientation="Horizontal">
-                            <Button
-                                Width="100"
-                                Height="35"
-                                Content="Save as PNG" />
-                        </StackPanel>
-
                         <local:HorizontalBarChartControl
                             x:Name="MyBarChartHorizontal"
-                            Grid.Row="1"
+                            Grid.Row="0"
                             Width="800"
                             Height="400"
                             Series="{Binding Path=BarChartHorizontalSeries}"
@@ -229,39 +204,31 @@
                 <TabItem Header="Column Chart">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="35" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
-
-                        <StackPanel Orientation="Horizontal">
-                            <Button
-                                Width="100"
-                                Height="35"
-                                Content="Save as PNG" />
-                        </StackPanel>
 
                         <local:ColumnChartControl
                             x:Name="MyColumnChart"
                             Grid.Row="1"
                             Width="800"
                             Height="400"
-                            Series="{Binding Path=ColumnChartSeries, UpdateSourceTrigger=PropertyChanged}" />
+                            ItemSource="{Binding Path=ColumnChartSeries, UpdateSourceTrigger=PropertyChanged}"
+                            LegendPosition="Top"
+                            XAxisTitle="Jahr"
+                            XAxisTitleFontSize="14"
+                            XAxisTitleForeground="Green"
+                            YAxisTitle="Umsatz in €"
+                            YAxisTitleAlignment="Center"
+                            YAxisTitleFontSize="14"
+                            YAxisTitleForeground="DarkBlue" />
                     </Grid>
                 </TabItem>
 
                 <TabItem Header="Gantt Chart">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="35" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
-
-                        <StackPanel Orientation="Horizontal">
-                            <Button
-                                Width="100"
-                                Height="35"
-                                Content="Save as PNG" />
-                        </StackPanel>
 
                         <local:GanttChartControl
                             x:Name="MyGanttChart"

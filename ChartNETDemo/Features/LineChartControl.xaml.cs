@@ -406,7 +406,7 @@
                 });
             }
 
-            // Vertikal (kategorial, gleichmäßig)
+            /* Vertikal (kategorial, gleichmäßig) */
             for (int i = 0; i <= VerticalGridLineCount; i++)
             {
                 double x = left + i * plotWidth / VerticalGridLineCount;
@@ -521,9 +521,10 @@
             }
 
             // Layout sicherstellen
-            Measure(new Size(this.ActualWidth, this.ActualHeight));
-            Arrange(new Rect(new Size(this.ActualWidth, this.ActualHeight)));
-            UpdateLayout();
+            Size size = new Size(this.ActualWidth, this.ActualHeight);
+            this.Measure(size);
+            this.Arrange(new Rect(size));
+            this.UpdateLayout();
 
             var rtb = new RenderTargetBitmap(
                 (int)(this.ActualWidth * dpi / 96.0),
@@ -533,7 +534,6 @@
                 PixelFormats.Pbgra32);
 
             rtb.Render(this);
-
             var encoder = new PngBitmapEncoder();
             encoder.Frames.Add(BitmapFrame.Create(rtb));
 

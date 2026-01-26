@@ -22,7 +22,10 @@
             SizeChanged="ChartCanvas_SizeChanged" />
 
         <!--  Legende  -->
-        <ItemsControl Grid.Column="1" ItemsSource="{Binding Path=Lines, ElementName=root}">
+        <ItemsControl
+            Grid.Column="1"
+            Background="White"
+            ItemsSource="{Binding Path=Lines, ElementName=root}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Margin="5" Orientation="Horizontal">
