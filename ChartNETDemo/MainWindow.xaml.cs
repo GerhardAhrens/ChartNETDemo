@@ -119,6 +119,16 @@ namespace ChartNETDemo
             }
         }
 
+        public List<TreemapGroup> Groups
+        {
+            get;
+            set
+            {
+                field = value;
+                this.OnPropertyChanged();
+            }
+        }
+
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnCloseApplication, "Click", this.OnCloseApplication);
@@ -128,6 +138,7 @@ namespace ChartNETDemo
             WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnBarChartH, "Click", this.OnSelectedChart);
             WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnColumnChart, "Click", this.OnSelectedChart);
             WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnGanttChart, "Click", this.OnSelectedChart);
+            WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnTreeMapChart, "Click", this.OnSelectedChart);
 
             WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnSaveToPng, "Click", this.OnChartSave);
 
@@ -137,6 +148,7 @@ namespace ChartNETDemo
             this.BarChartHorizontalDemoData();
             this.ColumnChartDemoData();
             this.GanttChartDemoData();
+            this.TreeMapChartDemoData();
         }
 
         private void OnSelectedChart(object sender, RoutedEventArgs e)
@@ -167,6 +179,10 @@ namespace ChartNETDemo
                 else if (btn.Tag.ToString() == "GanttChart")
                 {
                     this.ChartTabControl.SelectedIndex = 5;
+                }
+                else if (btn.Tag.ToString() == "TreeMapChart")
+                {
+                    this.ChartTabControl.SelectedIndex = 6;
                 }
             }
         }
@@ -204,6 +220,11 @@ namespace ChartNETDemo
                 else if (this.ChartTabControl.SelectedIndex == 5)
                 {
                     string demoDataImage = Path.Combine(this.DemoDataPath, "GanttChartDemo.png");
+                    this.MyGanttChart.ExportToPng(demoDataImage);
+                }
+                else if (this.ChartTabControl.SelectedIndex == 6)
+                {
+                    string demoDataImage = Path.Combine(this.DemoDataPath, "TreeMapChartDemo.png");
                     this.MyGanttChart.ExportToPng(demoDataImage);
                 }
             }
@@ -378,12 +399,11 @@ namespace ChartNETDemo
                         new() { X = "2022", Y = 39 }
                     }
                 }
-            };        
+            };
         }
 
         private void GanttChartDemoData()
         {
-
             var taskA = new GanttTask
             {
                 Title = "Analyse",
@@ -434,8 +454,36 @@ namespace ChartNETDemo
             MyGanttChart.Dependencies = new[]
             {
                 new GanttDependency { From = taskA, To = taskB },
-                new GanttDependency { From = taskB, To = taskC }, 
+                new GanttDependency { From = taskB, To = taskC },
                 new GanttDependency { From = taskC, To = taskE },
+            };
+        }
+
+        private void TreeMapChartDemoData()
+        {
+            Groups = new List<TreemapGroup>
+            {
+                new TreemapGroup
+                {
+                    Title = "Europa",
+                    Fill = Brushes.SteelBlue,
+                    Items =
+                    {
+                        new TreemapItem { Label = "Deutschland", Value = 40 },
+                        new TreemapItem { Label = "Frankreich", Value = 30 },
+                        new TreemapItem { Label = "Italien", Value = 20 }
+                    }
+                },
+                new TreemapGroup
+                {
+                    Title = "Asien",
+                    Fill = Brushes.Orange,
+                    Items =
+                    {
+                        new TreemapItem { Label = "China", Value = 60 },
+                        new TreemapItem { Label = "Japan", Value = 25 }
+                    }
+                }
             };
         }
 

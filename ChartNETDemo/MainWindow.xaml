@@ -95,6 +95,16 @@
             </Button>
 
             <Button
+                x:Name="BtnTreeMapChart"
+                Width="30"
+                Height="30"
+                Margin="5,0,0,0"
+                HorizontalAlignment="Left"
+                Tag="TreeMapChart">
+                <Image Source="{StaticResource ResourceKey=IconTreeMapChart}" Stretch="None" />
+            </Button>
+
+            <Button
                 x:Name="BtnSaveToPng"
                 Width="30"
                 Height="30"
@@ -239,6 +249,22 @@
                             Tasks="{Binding Path=Tasks}"
                             TodayLineBrush="Red"
                             TodayLineThickness="1" />
+                    </Grid>
+                </TabItem>
+
+                <TabItem Header="TreeMap Chart">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        
+                        <local:TreemapChartControl
+                            x:Name="MyTreeMapChart"
+                            Grid.Row="1"
+                            LegendPosition="Top"
+                            Width="800"
+                            Height="400"
+                            Groups="{Binding Path=Groups}" />
 
                     </Grid>
                 </TabItem>
