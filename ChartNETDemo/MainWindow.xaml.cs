@@ -483,6 +483,17 @@ namespace ChartNETDemo
                         new TreemapItem { Label = "China", Value = 60 },
                         new TreemapItem { Label = "Japan", Value = 25 }
                     }
+                },
+                new TreemapGroup
+                {
+                    Title = "Nord Amerika",
+                    Fill = Brushes.Green,
+                    Items =
+                    {
+                        new TreemapItem { Label = "USA", Value = 75 },
+                        new TreemapItem { Label = "Kanada", Value = 35 },
+                        new TreemapItem { Label = "Alaska", Value = 35 }
+                    }
                 }
             };
         }

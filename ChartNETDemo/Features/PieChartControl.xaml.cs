@@ -29,15 +29,15 @@
 
         #region DependencyProperty
 
-        public IEnumerable<PieSegment> Segments
+        public IEnumerable<PieSegment> ItemSource
         {
-            get => (IEnumerable<PieSegment>)GetValue(SegmentsProperty);
-            set => SetValue(SegmentsProperty, value);
+            get => (IEnumerable<PieSegment>)GetValue(ItemSourceProperty);
+            set => SetValue(ItemSourceProperty, value);
         }
 
-        public static readonly DependencyProperty SegmentsProperty =
+        public static readonly DependencyProperty ItemSourceProperty =
             DependencyProperty.Register(
-                nameof(Segments),
+                nameof(ItemSource),
                 typeof(IEnumerable<PieSegment>),
                 typeof(PieChartControl),
                 new PropertyMetadata(null, (_, __) => ((PieChartControl)_).Redraw()));
@@ -50,19 +50,19 @@
         {
             PART_Canvas.Children.Clear();
 
-            if (this.Segments == null || this.Segments.Any() == false || this.ActualWidth <= 0 || this.ActualHeight <= 0)
+            if (this.ItemSource == null || this.ItemSource.Any() == false || this.ActualWidth <= 0 || this.ActualHeight <= 0)
                 return;
 
             double centerX = this.ActualWidth / 2 - 80; // Platz für Legende
             double centerY = this.ActualHeight / 2;
             double radius = Math.Min(centerX, centerY) - 10;
 
-            double total = this.Segments.Sum(s => s.Value);
+            double total = this.ItemSource.Sum(s => s.Value);
             if (total == 0) return;
 
             double startAngle = 0;
 
-            foreach (var segment in this.Segments)
+            foreach (var segment in this.ItemSource)
             {
                 double sweepAngle = segment.Value / total * 360;
 
@@ -153,7 +153,7 @@
             const double lineHeight = boxSize + spacing;
 
             int i = 0;
-            foreach (var segment in this.Segments)
+            foreach (var segment in this.ItemSource)
             {
                 // Farbkasten
                 var rect = new Rectangle

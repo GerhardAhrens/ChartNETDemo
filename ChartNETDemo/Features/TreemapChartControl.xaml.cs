@@ -25,12 +25,12 @@
     /// </summary>
     public partial class TreemapChartControl : UserControl
     {
-        private const double PADDING = 4;
+        private const double ITEMPADDING = 4;
 
         public TreemapChartControl()
         {
-            InitializeComponent();
-            SizeChanged += (_, _) => Redraw();
+            this.InitializeComponent();
+            this.SizeChanged += (_, _) => this.Redraw();
         }
 
         #region DependencyProperty
@@ -105,7 +105,9 @@
             this.PART_Legend.Children.Clear();
 
             if (this.ItemSource == null || this.ItemSource.Any() == false)
+            {
                 return;
+            }
 
             this.DrawTreemap(new Rect(0, 0, ActualWidth, ActualHeight));
 
@@ -121,7 +123,9 @@
             var groups = ItemSource.ToList();
             double totalValue = groups.Sum(g => g.Items.Sum(i => i.Value));
             if (totalValue <= 0)
+            {
                 return;
+            }
 
             bool horizontal = area.Width >= area.Height;
             double offset = 0;
@@ -130,7 +134,9 @@
             {
                 double groupValue = group.Items.Sum(i => i.Value);
                 if (groupValue <= 0)
+                {
                     continue;
+                }
 
                 double ratio = groupValue / totalValue;
 
@@ -138,20 +144,20 @@
                     ? new Rect(area.X + offset, area.Y, area.Width * ratio, area.Height)
                     : new Rect(area.X, area.Y + offset, area.Width, area.Height * ratio);
 
-                this.DrawGroup(group, groupRect);
+                this.DrawGroup(group, groupRect, totalValue);
 
-                offset += horizontal
-                    ? area.Width * ratio
-                    : area.Height * ratio;
+                offset += horizontal ? area.Width * ratio : area.Height * ratio;
             }
         }
 
-        private void DrawGroup(TreemapGroup group, Rect area)
+        private void DrawGroup(TreemapGroup group, Rect area, double totalValue)
         {
             var items = group.Items.Where(i => i.Value > 0).ToList();
             double total = items.Sum(i => i.Value);
             if (total <= 0)
+            {
                 return;
+            }
 
             bool horizontal = area.Width >= area.Height;
             double offset = 0;
@@ -164,24 +170,24 @@
                     ? new Rect(area.X + offset, area.Y, area.Width * ratio, area.Height)
                     : new Rect(area.X, area.Y + offset, area.Width, area.Height * ratio);
 
-                this.DrawItem(rect, group.Fill, item.Label);
+                this.DrawItem(rect, group.Fill, item.Label, item.Value, totalValue);
 
-                offset += horizontal
-                    ? area.Width * ratio
-                    : area.Height * ratio;
+                offset += horizontal ? area.Width * ratio : area.Height * ratio;
             }
         }
 
-        private void DrawItem(Rect rect, Brush fill, string label)
+        private void DrawItem(Rect rect, Brush fill, string label, double value,  double totalValue)
         {
             rect = new Rect(
-                rect.X + PADDING,
-                rect.Y + PADDING,
-                Math.Max(0, rect.Width - 2 * PADDING),
-                Math.Max(0, rect.Height - 2 * PADDING));
+                    rect.X + ITEMPADDING,
+                    rect.Y + ITEMPADDING,
+                    Math.Max(0, rect.Width - 2 * ITEMPADDING),
+                    Math.Max(0, rect.Height - 2 * ITEMPADDING));
 
             if (rect.Width <= 2 || rect.Height <= 2)
+            {
                 return;
+            }
 
             var border = new Rectangle
             {
@@ -189,7 +195,13 @@
                 Height = rect.Height,
                 Fill = fill,
                 Stroke = Brushes.White,
-                StrokeThickness = 1
+                StrokeThickness = 1,
+
+                /* Tooltip hinzufügen */
+                ToolTip = new ToolTip
+                {
+                    Content = BuildTooltipText(label, value, totalValue)
+                }
             };
 
             Canvas.SetLeft(border, rect.X);
@@ -200,15 +212,16 @@
             {
                 var text = new TextBlock
                 {
-                    Text = label,
+                    Text = $"{label} ({value})",
                     Foreground = Brushes.White,
                     FontSize = 12,
-                    TextWrapping = TextWrapping.Wrap
+                    TextWrapping = TextWrapping.Wrap,
+                    IsHitTestVisible = false   // Tooltip bleibt am Rechteck
                 };
 
                 Canvas.SetLeft(text, rect.X + 4);
                 Canvas.SetTop(text, rect.Y + 4);
-                this.PART_Canvas.Children.Add(text);
+                PART_Canvas.Children.Add(text);
             }
         }
 
@@ -247,7 +260,9 @@
         private void UpdateLegendLayout()
         {
             if (this.PART_RootGrid == null || this.PART_Canvas == null || this.PART_Legend == null)
+            {
                 return;
+            }
 
             this.PART_RootGrid.RowDefinitions.Clear();
             this.PART_RootGrid.ColumnDefinitions.Clear();
@@ -297,6 +312,12 @@
             }
         }
 
+        private static string BuildTooltipText(string label, double value, double total)
+        {
+            double percent = total > 0 ? value / total * 100.0 : 0;
+
+            return $"{label}\nWert: {value:0}\nAnteil: {percent:0.0} %";
+        }
         #endregion
 
         #region Export als PNG Image

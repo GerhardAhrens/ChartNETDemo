@@ -155,7 +155,7 @@
                             Grid.Row="1"
                             Width="800"
                             Height="400"
-                            Segments="{Binding Path=PieChartSegments}" />
+                            ItemSource="{Binding Path=PieChartSegments}" />
                     </Grid>
                 </TabItem>
 
@@ -248,7 +248,7 @@
 
                 <TabItem Header="TreeMap Chart">
                     <Grid>
-                        <local:TreemapChartControl
+                        <local:TreemapChartControl Margin="0,0,10,40"
                             x:Name="MyTreeMapChart"
                             Grid.Row="1"
                             ItemSource="{Binding Path=Groups}"

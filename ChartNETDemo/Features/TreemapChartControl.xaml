@@ -8,9 +8,9 @@
     d:DesignHeight="400"
     d:DesignWidth="400"
     mc:Ignorable="d">
-    <Grid x:Name="PART_RootGrid">
+    <Grid x:Name="PART_RootGrid" Margin="10">
         <Canvas x:Name="PART_Canvas" Background="Transparent" />
 
-        <StackPanel x:Name="PART_Legend" Margin="10" />
+        <StackPanel x:Name="PART_Legend" Margin="5" />
     </Grid>
 </UserControl>
