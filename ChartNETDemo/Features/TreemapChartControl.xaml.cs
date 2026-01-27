@@ -1,7 +1,6 @@
 ﻿namespace ChartNETDemo
 {
     using System.Collections.Generic;
-    using System.IO;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Media;
@@ -36,15 +35,15 @@
 
         #region DependencyProperty
 
-        public IEnumerable<TreemapGroup> Groups
+        public IEnumerable<TreemapGroup> ItemSource
         {
-            get => (IEnumerable<TreemapGroup>)GetValue(GroupsProperty);
-            set => SetValue(GroupsProperty, value);
+            get => (IEnumerable<TreemapGroup>)GetValue(ItemSourceProperty);
+            set => SetValue(ItemSourceProperty, value);
         }
 
-        public static readonly DependencyProperty GroupsProperty =
+        public static readonly DependencyProperty ItemSourceProperty =
             DependencyProperty.Register(
-                nameof(Groups),
+                nameof(ItemSource),
                 typeof(IEnumerable<TreemapGroup>),
                 typeof(TreemapChartControl),
                 new PropertyMetadata(null, (_, __) => ((TreemapChartControl)_).Redraw()));
@@ -102,21 +101,24 @@
 
         private void Redraw()
         {
-            PART_Canvas.Children.Clear();
-            PART_Legend.Children.Clear();
+            this.PART_Canvas.Children.Clear();
+            this.PART_Legend.Children.Clear();
 
-            if (Groups == null || !Groups.Any())
+            if (this.ItemSource == null || this.ItemSource.Any() == false)
                 return;
 
-            DrawTreemap(new Rect(0, 0, ActualWidth, ActualHeight));
+            this.DrawTreemap(new Rect(0, 0, ActualWidth, ActualHeight));
 
-            if (ShowLegend)
-                DrawLegend();
+            if (ShowLegend == true)
+            {
+                this.DrawLegend();
+                this.UpdateLegendLayout();
+            }
         }
 
         private void DrawTreemap(Rect area)
         {
-            var groups = Groups.ToList();
+            var groups = ItemSource.ToList();
             double totalValue = groups.Sum(g => g.Items.Sum(i => i.Value));
             if (totalValue <= 0)
                 return;
@@ -136,7 +138,7 @@
                     ? new Rect(area.X + offset, area.Y, area.Width * ratio, area.Height)
                     : new Rect(area.X, area.Y + offset, area.Width, area.Height * ratio);
 
-                DrawGroup(group, groupRect);
+                this.DrawGroup(group, groupRect);
 
                 offset += horizontal
                     ? area.Width * ratio
@@ -162,7 +164,7 @@
                     ? new Rect(area.X + offset, area.Y, area.Width * ratio, area.Height)
                     : new Rect(area.X, area.Y + offset, area.Width, area.Height * ratio);
 
-                DrawItem(rect, group.Fill, item.Label);
+                this.DrawItem(rect, group.Fill, item.Label);
 
                 offset += horizontal
                     ? area.Width * ratio
@@ -206,15 +208,15 @@
 
                 Canvas.SetLeft(text, rect.X + 4);
                 Canvas.SetTop(text, rect.Y + 4);
-                PART_Canvas.Children.Add(text);
+                this.PART_Canvas.Children.Add(text);
             }
         }
 
         private void DrawLegend()
         {
-            PART_Legend.Children.Clear();
+            this.PART_Legend.Children.Clear();
 
-            foreach (var group in Groups)
+            foreach (var group in ItemSource)
             {
                 var row = new StackPanel
                 {
@@ -229,7 +231,7 @@
                     Fill = group.Fill,
                     Stroke = Brushes.Black,
                     StrokeThickness = 0.5,
-                    Margin = new Thickness(0, 0, 6, 0)
+                    Margin = new Thickness(5, 0, 6, 0)
                 });
 
                 row.Children.Add(new TextBlock
@@ -238,87 +240,93 @@
                     VerticalAlignment = VerticalAlignment.Center
                 });
 
-                PART_Legend.Children.Add(row);
+                this.PART_Legend.Children.Add(row);
             }
         }
 
         private void UpdateLegendLayout()
         {
-            if (PART_RootGrid == null || PART_Canvas == null || PART_Legend == null)
+            if (this.PART_RootGrid == null || this.PART_Canvas == null || this.PART_Legend == null)
                 return;
 
-            PART_RootGrid.RowDefinitions.Clear();
-            PART_RootGrid.ColumnDefinitions.Clear();
+            this.PART_RootGrid.RowDefinitions.Clear();
+            this.PART_RootGrid.ColumnDefinitions.Clear();
 
-            Grid.SetRow(PART_Canvas, 0);
-            Grid.SetColumn(PART_Canvas, 0);
-            Grid.SetRow(PART_Legend, 0);
-            Grid.SetColumn(PART_Legend, 0);
+            Grid.SetRow(this.PART_Canvas, 0);
+            Grid.SetColumn(this.PART_Canvas, 0);
+            Grid.SetRow(this.PART_Legend, 0);
+            Grid.SetColumn(this.PART_Legend, 0);
 
-            switch (LegendPosition)
+            switch (this.LegendPosition)
             {
                 case LegendPosition.Left:
-                    PART_RootGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-                    PART_RootGrid.ColumnDefinitions.Add(new ColumnDefinition());
+                    this.PART_RootGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+                    this.PART_RootGrid.ColumnDefinitions.Add(new ColumnDefinition());
 
-                    Grid.SetColumn(PART_Legend, 0);
-                    Grid.SetColumn(PART_Canvas, 1);
-                    PART_Legend.Orientation = Orientation.Vertical;
+                    Grid.SetColumn(this.PART_Legend, 0);
+                    Grid.SetColumn(this.PART_Canvas, 1);
+                    this.PART_Legend.Orientation = Orientation.Vertical;
                     break;
 
                 case LegendPosition.Right:
-                    PART_RootGrid.ColumnDefinitions.Add(new ColumnDefinition());
-                    PART_RootGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+                    this.PART_RootGrid.ColumnDefinitions.Add(new ColumnDefinition());
+                    this.PART_RootGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
-                    Grid.SetColumn(PART_Canvas, 0);
-                    Grid.SetColumn(PART_Legend, 1);
-                    PART_Legend.Orientation = Orientation.Vertical;
+                    Grid.SetColumn(this.PART_Canvas, 0);
+                    Grid.SetColumn(this.PART_Legend, 1);
+                    this.PART_Legend.Orientation = Orientation.Vertical;
                     break;
 
                 case LegendPosition.Top:
-                    PART_RootGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-                    PART_RootGrid.RowDefinitions.Add(new RowDefinition());
+                    this.PART_RootGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                    this.PART_RootGrid.RowDefinitions.Add(new RowDefinition());
 
-                    Grid.SetRow(PART_Legend, 0);
-                    Grid.SetRow(PART_Canvas, 1);
-                    PART_Legend.Orientation = Orientation.Horizontal;
+                    Grid.SetRow(this.PART_Legend, 0);
+                    Grid.SetRow(this.PART_Canvas, 1);
+                    this.PART_Legend.Orientation = Orientation.Horizontal;
                     break;
 
                 case LegendPosition.Bottom:
-                    PART_RootGrid.RowDefinitions.Add(new RowDefinition());
-                    PART_RootGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                    this.PART_RootGrid.RowDefinitions.Add(new RowDefinition());
+                    this.PART_RootGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 
-                    Grid.SetRow(PART_Canvas, 0);
-                    Grid.SetRow(PART_Legend, 1);
-                    PART_Legend.Orientation = Orientation.Horizontal;
+                    Grid.SetRow(this.PART_Canvas, 0);
+                    Grid.SetRow(this.PART_Legend, 1);
+                    this.PART_Legend.Orientation = Orientation.Horizontal;
                     break;
             }
         }
 
         #endregion
 
-        #region PNG Export
-
+        #region Export als PNG Image
         public void ExportToPng(string filePath, double dpi = 96)
         {
-            UpdateLayout();
+            if (this.ActualWidth <= 0 || this.ActualHeight <= 0)
+            {
+                return;
+            }
+
+            // Layout sicherstellen
+            Size size = new Size(this.ActualWidth, this.ActualHeight);
+            this.Measure(size);
+            this.Arrange(new Rect(size));
+            this.UpdateLayout();
 
             var rtb = new RenderTargetBitmap(
-                (int)(ActualWidth * dpi / 96),
-                (int)(ActualHeight * dpi / 96),
+                (int)(this.ActualWidth * dpi / 96.0),
+                (int)(this.ActualHeight * dpi / 96.0),
                 dpi,
                 dpi,
                 PixelFormats.Pbgra32);
 
             rtb.Render(this);
-
             var encoder = new PngBitmapEncoder();
             encoder.Frames.Add(BitmapFrame.Create(rtb));
 
-            using var fs = new FileStream(filePath, FileMode.Create);
+            using System.IO.FileStream fs = new System.IO.FileStream(filePath, System.IO.FileMode.Create);
             encoder.Save(fs);
         }
-
-        #endregion
+        #endregion Export als PNG Image
     }
 }

@@ -125,15 +125,9 @@
             <TabControl x:Name="ChartTabControl" SelectedIndex="0">
                 <TabItem Header="Line Chart">
                     <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-
                         <local:LineChartControl
                             x:Name="LineChart"
                             Grid.Row="0"
-                            Width="800"
-                            Height="400"
                             GridLineBrush="Gainsboro"
                             GridLineThickness="1"
                             HorizontalGridLineCount="4"
@@ -254,18 +248,13 @@
 
                 <TabItem Header="TreeMap Chart">
                     <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        
                         <local:TreemapChartControl
                             x:Name="MyTreeMapChart"
                             Grid.Row="1"
+                            ItemSource="{Binding Path=Groups}"
                             LegendPosition="Top"
-                            Width="800"
-                            Height="400"
-                            Groups="{Binding Path=Groups}" />
-
+                            ShowLabels="True"
+                            ShowLegend="True" />
                     </Grid>
                 </TabItem>
             </TabControl>

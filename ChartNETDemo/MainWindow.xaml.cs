@@ -225,7 +225,7 @@ namespace ChartNETDemo
                 else if (this.ChartTabControl.SelectedIndex == 6)
                 {
                     string demoDataImage = Path.Combine(this.DemoDataPath, "TreeMapChartDemo.png");
-                    this.MyGanttChart.ExportToPng(demoDataImage);
+                    this.MyTreeMapChart.ExportToPng(demoDataImage);
                 }
             }
         }
