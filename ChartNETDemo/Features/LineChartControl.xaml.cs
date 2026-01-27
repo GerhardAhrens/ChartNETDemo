@@ -47,7 +47,7 @@
     public partial class LineChartControl : UserControl
     {
         // Plot-Ränder
-        private const double LeftMargin = 60;
+        private const double LeftMargin = 30;
         private const double BottomMargin = 35;
         private const double TopMargin = 10;
         private const double RightMargin = 10;

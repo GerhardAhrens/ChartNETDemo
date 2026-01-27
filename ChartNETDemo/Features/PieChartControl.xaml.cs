@@ -51,24 +51,38 @@
             PART_Canvas.Children.Clear();
 
             if (this.ItemSource == null || this.ItemSource.Any() == false || this.ActualWidth <= 0 || this.ActualHeight <= 0)
+            {
                 return;
+            }
 
-            double centerX = this.ActualWidth / 2 - 80; // Platz für Legende
+            double centerX = this.ActualWidth / 2 - 30; // Platz für Legende
             double centerY = this.ActualHeight / 2;
             double radius = Math.Min(centerX, centerY) - 10;
 
             double total = this.ItemSource.Sum(s => s.Value);
-            if (total == 0) return;
+            if (total == 0)
+            {
+                return;
+            }
 
             double startAngle = 0;
+            double width = ActualWidth;
+            double height = ActualHeight;
+            Point center = new Point(width / 2, height / 2);
 
             foreach (var segment in this.ItemSource)
             {
                 double sweepAngle = segment.Value / total * 360;
 
-                // Segment
-                var path = CreatePieSlice(centerX, centerY, radius, startAngle, sweepAngle, segment.Fill);
-                this.PART_Canvas.Children.Add(path);
+                this.DrawPieSegmentWithTooltip(
+                        center,
+                        radius,
+                        startAngle,
+                        sweepAngle,
+                        segment.Label,
+                        segment.Value,
+                        total,
+                        segment.Fill);
 
                 // Label
                 this.AddSegmentLabel(centerX, centerY, radius, startAngle, sweepAngle, segment, total);
@@ -135,7 +149,7 @@
                 Text = $"{segment.Label} ({segment.Value / total * 100:0.#}%)",
                 Foreground = Brushes.White,
                 FontSize = 12,
-                FontWeight = FontWeights.Bold
+                FontWeight = FontWeights.Bold,
             };
 
             text.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
@@ -182,6 +196,71 @@
 
                 i++;
             }
+        }
+
+        private void DrawPieSegmentWithTooltip(Point center, double radius, double startAngle, double sweepAngle, string label, double value, double totalValue, Brush fill)
+        {
+            // ---------- Geometrie ----------
+            double startRad = startAngle * Math.PI / 180;
+            double endRad = (startAngle + sweepAngle) * Math.PI / 180;
+
+            Point startPoint = new Point(
+                center.X + radius * Math.Cos(startRad),
+                center.Y + radius * Math.Sin(startRad));
+
+            Point endPoint = new Point(
+                center.X + radius * Math.Cos(endRad),
+                center.Y + radius * Math.Sin(endRad));
+
+            bool isLargeArc = sweepAngle > 180;
+
+            // ---------- Path-Geometrie ----------
+            var figure = new PathFigure
+            {
+                StartPoint = center,
+                IsClosed = true
+            };
+
+            figure.Segments.Add(new LineSegment(startPoint, true));
+
+            figure.Segments.Add(new ArcSegment
+            {
+                Point = endPoint,
+                Size = new Size(radius, radius),
+                IsLargeArc = isLargeArc,
+                SweepDirection = SweepDirection.Clockwise,
+                IsStroked = true
+            });
+
+            figure.Segments.Add(new LineSegment(center, true));
+
+            var geometry = new PathGeometry();
+            geometry.Figures.Add(figure);
+
+            // ---------- Tooltip-Text ----------
+            double percent = totalValue > 0
+                ? value / totalValue * 100.0
+                : 0;
+
+            string tooltipText =
+                $"{label}\n" +
+                $"Wert: {value:0.##}\n" +
+                $"Anteil: {percent:0.#} %";
+
+            // ---------- Segment ----------
+            var path = new Path
+            {
+                Data = geometry,
+                Fill = fill,
+                Stroke = Brushes.White,
+                StrokeThickness = 1,
+                ToolTip = new ToolTip
+                {
+                    Content = tooltipText
+                }
+            };
+
+            PART_Canvas.Children.Add(path);
         }
 
         #endregion

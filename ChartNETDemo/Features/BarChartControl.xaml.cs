@@ -149,15 +149,15 @@
                     c.UpdateLegendLayout();
                 }));
 
-        public IEnumerable<BarSeries> Series
+        public IEnumerable<BarSeries> ItemSource
         {
-            get => (IEnumerable<BarSeries>)GetValue(SeriesProperty);
-            set => SetValue(SeriesProperty, value);
+            get => (IEnumerable<BarSeries>)GetValue(ItemSourceProperty);
+            set => SetValue(ItemSourceProperty, value);
         }
 
-        public static readonly DependencyProperty SeriesProperty =
+        public static readonly DependencyProperty ItemSourceProperty =
             DependencyProperty.Register(
-                nameof(Series),
+                nameof(ItemSource),
                 typeof(IEnumerable<BarSeries>),
                 typeof(BarChartControl),
                 new PropertyMetadata(null, (_, __) => ((BarChartControl)_).Redraw()));
@@ -189,7 +189,7 @@
             this.PART_Canvas.Children.Clear();
             this.PART_Legend.Children.Clear();
 
-            if (Series == null || !Series.Any() || ActualWidth <= 0 || ActualHeight <= 0)
+            if (ItemSource == null || !ItemSource.Any() || ActualWidth <= 0 || ActualHeight <= 0)
             {
                 return;
             }
@@ -206,7 +206,7 @@
 
         private void DrawLegend()
         {
-            foreach (var series in this.Series)
+            foreach (var series in this.ItemSource)
             {
                 var row = new StackPanel
                 {
@@ -239,12 +239,12 @@
 
         private void DrawBars()
         {
-            if (this.Series == null || this.Series.Any() == false)
+            if (this.ItemSource == null || this.ItemSource.Any() == false)
             {
                 return;
             }
 
-            var seriesList = this.Series.ToList();
+            var seriesList = this.ItemSource.ToList();
 
             // X-Kategorien aus erster Serie
             var categories = seriesList.First().Values.Select(v => v.X).ToList();
@@ -280,12 +280,18 @@
                     // Y-Position (von oben) unter Berücksichtigung der gestapelten Basis
                     double y = TopMargin + plotHeight - (stackBase + value.Y) / maxStackValue * plotHeight;
 
+                    double stackedTotal = seriesList.Sum(s => s.Values.FirstOrDefault(v => v.X == categories[i])?.Y ?? 0);
+
                     // Rechteck für Balken
                     var rect = new Rectangle
                     {
                         Width = barWidth,
                         Height = barHeight,
-                        Fill = series.Fill
+                        Fill = series.Fill,
+                        ToolTip = new ToolTip
+                        {
+                            Content = BuildBarSegmentTooltip(series.Title, categories[i], value.Y, stackedTotal)
+                        }
                     };
 
                     Canvas.SetLeft(rect, x);
@@ -300,12 +306,12 @@
 
         private void DrawYAxisWithLabels()
         {
-            if (this.Series == null || this.Series.Any() == false)
+            if (this.ItemSource == null || this.ItemSource.Any() == false)
             {
                 return;
             }
 
-            var seriesList = this.Series.ToList();
+            var seriesList = this.ItemSource.ToList();
             var categories = seriesList.First().Values.Select(v => v.X).ToList();
             if (categories.Count == 0)
             {
@@ -400,7 +406,7 @@
 
         private void DrawXAxisLabels()
         {
-            var categories = this.Series.First().Values.Select(v => v.X).ToList();
+            var categories = this.ItemSource.First().Values.Select(v => v.X).ToList();
             int count = categories.Count;
 
             double plotWidth = ActualWidth - LeftMargin - RightMargin;
@@ -535,6 +541,13 @@
 
                 _ => value.ToString("0", CultureInfo.CurrentCulture)
             };
+        }
+
+        private static string BuildBarSegmentTooltip(string seriesTitle, string category, double value, double stackedTotal)
+        {
+            double percent = (stackedTotal > 0) ? value / (stackedTotal * 100.0) : 0;
+
+            return $"Serie: {seriesTitle}\nKategorie: {category}\nWert: {value:0.##}\nAnteil: {percent:0.#} %";
         }
 
         #endregion
