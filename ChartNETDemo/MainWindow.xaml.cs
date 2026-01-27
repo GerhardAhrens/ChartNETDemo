@@ -129,6 +129,16 @@ namespace ChartNETDemo
             }
         }
 
+        public List<HeatmapCell> HeatmapCellSource
+        {
+            get;
+            set
+            {
+                field = value;
+                this.OnPropertyChanged();
+            }
+        }
+
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnCloseApplication, "Click", this.OnCloseApplication);
@@ -139,6 +149,7 @@ namespace ChartNETDemo
             WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnColumnChart, "Click", this.OnSelectedChart);
             WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnGanttChart, "Click", this.OnSelectedChart);
             WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnTreeMapChart, "Click", this.OnSelectedChart);
+            WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnHeadmapChart, "Click", this.OnSelectedChart);
 
             WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnSaveToPng, "Click", this.OnChartSave);
 
@@ -149,6 +160,7 @@ namespace ChartNETDemo
             this.ColumnChartDemoData();
             this.GanttChartDemoData();
             this.TreeMapChartDemoData();
+            this.HeadmapChartDemoData();
         }
 
         private void OnSelectedChart(object sender, RoutedEventArgs e)
@@ -183,6 +195,10 @@ namespace ChartNETDemo
                 else if (btn.Tag.ToString() == "TreeMapChart")
                 {
                     this.ChartTabControl.SelectedIndex = 6;
+                }
+                else if (btn.Tag.ToString() == "HeadmapChart")
+                {
+                    this.ChartTabControl.SelectedIndex = 7;
                 }
             }
         }
@@ -225,6 +241,11 @@ namespace ChartNETDemo
                 else if (this.ChartTabControl.SelectedIndex == 6)
                 {
                     string demoDataImage = Path.Combine(this.DemoDataPath, "TreeMapChartDemo.png");
+                    this.MyTreeMapChart.ExportToPng(demoDataImage);
+                }
+                else if (this.ChartTabControl.SelectedIndex == 7)
+                {
+                    string demoDataImage = Path.Combine(this.DemoDataPath, "HeadmapChartDemo.png");
                     this.MyTreeMapChart.ExportToPng(demoDataImage);
                 }
             }
@@ -495,6 +516,22 @@ namespace ChartNETDemo
                         new TreemapItem { Label = "Alaska", Value = 35 }
                     }
                 }
+            };
+        }
+
+        private void HeadmapChartDemoData()
+        {
+            this.HeatmapCellSource = new List<HeatmapCell>
+            {
+                new HeatmapCell { X = "Mo", Y = "A", Value = 100 },
+                new HeatmapCell { X = "Di", Y = "A", Value = 70 },
+                new HeatmapCell { X = "Mi", Y = "A", Value = 5 },
+                new HeatmapCell { X = "Do", Y = "A", Value = 6 },
+
+                new HeatmapCell { X = "Mo", Y = "B", Value = 5 },
+                new HeatmapCell { X = "Di", Y = "B", Value = 12 },
+                new HeatmapCell { X = "Mi", Y = "B", Value = 17 },
+                new HeatmapCell { X = "Do", Y = "B", Value = 7 }
             };
         }
 

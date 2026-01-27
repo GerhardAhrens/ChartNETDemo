@@ -105,6 +105,16 @@
             </Button>
 
             <Button
+                x:Name="BtnHeadmapChart"
+                Width="30"
+                Height="30"
+                Margin="5,0,0,0"
+                HorizontalAlignment="Left"
+                Tag="HeadmapChart">
+                <Image Source="{StaticResource ResourceKey=IconHeadMapChart}" Stretch="None" />
+            </Button>
+
+            <Button
                 x:Name="BtnSaveToPng"
                 Width="30"
                 Height="30"
@@ -246,15 +256,26 @@
                     </Grid>
                 </TabItem>
 
-                <TabItem Header="TreeMap Chart">
+                <TabItem Header="Treemap Chart">
                     <Grid>
-                        <local:TreemapChartControl Margin="0,0,10,40"
+                        <local:TreemapChartControl
                             x:Name="MyTreeMapChart"
                             Grid.Row="1"
+                            Margin="0,0,10,40"
                             ItemSource="{Binding Path=Groups}"
                             LegendPosition="Top"
                             ShowLabels="True"
                             ShowLegend="True" />
+                    </Grid>
+                </TabItem>
+
+                <TabItem Header="Treemap Chart">
+                    <Grid>
+                        <local:HeatmapChartControl
+                            x:Name="MyHeadmapChart"
+                            Grid.Row="1"
+                            Margin="0,0,10,40"
+                            ItemSource="{Binding Path=HeatmapCellSource}" />
                     </Grid>
                 </TabItem>
             </TabControl>
