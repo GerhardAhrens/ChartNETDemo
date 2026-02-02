@@ -60,28 +60,15 @@
 
         #region Dependency Properties
 
-        public IEnumerable<LineSeries> Series
+        public ObservableCollection<ChartLine> ItemSource
         {
-            get => (IEnumerable<LineSeries>)GetValue(SeriesProperty);
-            set => SetValue(SeriesProperty, value);
+            get => (ObservableCollection<ChartLine>)GetValue(ItemSourceProperty);
+            set => SetValue(ItemSourceProperty, value);
         }
 
-        public static readonly DependencyProperty SeriesProperty =
+        public static readonly DependencyProperty ItemSourceProperty =
             DependencyProperty.Register(
-                nameof(Series),
-                typeof(IEnumerable<LineSeries>),
-                typeof(LineChartControl),
-                new PropertyMetadata(null, (_, __) => ((LineChartControl)_).Redraw()));
-
-        public ObservableCollection<ChartLine> Lines
-        {
-            get => (ObservableCollection<ChartLine>)GetValue(LinesProperty);
-            set => SetValue(LinesProperty, value);
-        }
-
-        public static readonly DependencyProperty LinesProperty =
-            DependencyProperty.Register(
-                nameof(Lines),
+                nameof(ItemSource),
                 typeof(ObservableCollection<ChartLine>),
                 typeof(LineChartControl),
                 new PropertyMetadata(null, OnChartPropertyChanged));
@@ -262,7 +249,7 @@
         {
             this.ChartCanvas.Children.Clear();
 
-            if (this.Lines == null || this.Lines.Count == 0)
+            if (this.ItemSource == null || this.ItemSource.Count == 0)
             {
                 return;
             }
@@ -425,8 +412,8 @@
 
         private void DrawYAxisLabels(double plotHeight)
         {
-            double min = Lines.SelectMany(l => l.Values).Min(p => p.Value);
-            double max = Lines.SelectMany(l => l.Values).Max(p => p.Value);
+            double min = ItemSource.SelectMany(l => l.Values).Min(p => p.Value);
+            double max = ItemSource.SelectMany(l => l.Values).Max(p => p.Value);
 
             for (int i = 0; i <= HorizontalGridLineCount; i++)
             {
@@ -448,7 +435,7 @@
 
         private void DrawXAxisLabels(double plotWidth, double plotHeight)
         {
-            var referenceLine = Lines.FirstOrDefault();
+            var referenceLine = ItemSource.FirstOrDefault();
             if (referenceLine == null || referenceLine.Values.Count < 2)
             {
                 return;
@@ -477,15 +464,15 @@
 
         private void DrawLines(double plotWidth, double plotHeight)
         {
-            double min = this.Lines.SelectMany(l => l.Values).Min(p => p.Value);
-            double max = this.Lines.SelectMany(l => l.Values).Max(p => p.Value);
+            double min = this.ItemSource.SelectMany(l => l.Values).Min(p => p.Value);
+            double max = this.ItemSource.SelectMany(l => l.Values).Max(p => p.Value);
 
             if (Math.Abs(max - min) < double.Epsilon)
             {
                 return;
             }
 
-            foreach (var line in Lines)
+            foreach (var line in ItemSource)
             {
                 if (line.Values.Count < 2)
                 {

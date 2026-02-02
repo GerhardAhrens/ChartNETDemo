@@ -38,15 +38,15 @@
 
         #region DependencyProperties
 
-        public IEnumerable<HorizontalBarSeries> Series
+        public IEnumerable<HorizontalBarSeries> ItemSource
         {
-            get => (IEnumerable<HorizontalBarSeries>)GetValue(SeriesProperty);
-            set => SetValue(SeriesProperty, value);
+            get => (IEnumerable<HorizontalBarSeries>)GetValue(ItemSourceProperty);
+            set => SetValue(ItemSourceProperty, value);
         }
 
-        public static readonly DependencyProperty SeriesProperty =
+        public static readonly DependencyProperty ItemSourceProperty =
             DependencyProperty.Register(
-                nameof(Series),
+                nameof(ItemSource),
                 typeof(IEnumerable<HorizontalBarSeries>),
                 typeof(HorizontalBarChartControl),
                 new PropertyMetadata(null, (_, __) => ((HorizontalBarChartControl)_).Redraw()));
@@ -230,7 +230,7 @@
             this.PART_Canvas.Children.Clear();
             this.PART_Legend.Children.Clear();
 
-            if (this.Series == null || this.Series.Any() == false || this.ActualWidth <= 0 || this.ActualHeight <= 0)
+            if (this.ItemSource == null || this.ItemSource.Any() == false || this.ActualWidth <= 0 || this.ActualHeight <= 0)
             {
                 return;
             }
@@ -320,14 +320,13 @@
 
         private void DrawBars()
         {
-            var seriesList = this.Series.ToList();
+            var seriesList = this.ItemSource.ToList();
             var categories = seriesList.First().Values.Select(v => v.Y).ToList();
 
             double plotWidth = ActualWidth - LEFTMARGIN - RIGHTMARGIN;
             double plotHeight = ActualHeight - TOPMARGIN - BOTTOMMARGIN;
 
-            double maxStackValue = categories.Max(cat =>
-                seriesList.Sum(s => s.Values.FirstOrDefault(v => v.Y == cat)?.X ?? 0));
+            double maxStackValue = categories.Max(cat => seriesList.Sum(s => s.Values.FirstOrDefault(v => v.Y == cat)?.X ?? 0));
 
             int count = categories.Count;
             double rowHeight = plotHeight / count;
@@ -341,17 +340,25 @@
                 {
                     var value = series.Values.FirstOrDefault(v => v.Y == categories[i]);
                     if (value == null || value.X <= 0)
+                    {
                         continue;
+                    }
 
                     double width = value.X / maxStackValue * plotWidth;
                     double x = LEFTMARGIN + stackBase / maxStackValue * plotWidth;
                     double y = TOPMARGIN + i * rowHeight + (rowHeight - barHeight) / 2;
 
+                    double stackedTotal = seriesList.Sum(s => s.Values.FirstOrDefault(v => v.Y == categories[i])?.X ?? 0);
+
                     var rect = new Rectangle
                     {
                         Width = width,
                         Height = barHeight,
-                        Fill = series.Fill
+                        Fill = series.Fill,
+                        ToolTip = new ToolTip
+                        {
+                            Content = BuildBarSegmentTooltip(series.Title, categories[i], value.X, stackedTotal)
+                        }
                     };
 
                     Canvas.SetLeft(rect, x);
@@ -363,9 +370,16 @@
             }
         }
 
+        private static string BuildBarSegmentTooltip(string seriesTitle, string category, double value, double stackedTotal)
+        {
+            double percent = ((stackedTotal > 0) ? value / stackedTotal : 0) * 100;
+
+            return $"Serie: {seriesTitle}\nKategorie: {category}\nWert: {value:0.##}\nAnteil: {percent:0.#} %";
+        }
+
         private void DrawYAxisLabels()
         {
-            var categories = this.Series.First().Values.Select(v => v.Y).ToList();
+            var categories = this.ItemSource.First().Values.Select(v => v.Y).ToList();
             double plotHeight = ActualHeight - TOPMARGIN - BOTTOMMARGIN;
             double rowHeight = plotHeight / categories.Count;
 
@@ -380,7 +394,7 @@
 
         private void DrawXAxisLabels()
         {
-            var seriesList = Series.ToList();
+            var seriesList = ItemSource.ToList();
             var categories = seriesList.First().Values.Select(v => v.Y).ToList();
 
             double plotWidth = ActualWidth - LEFTMARGIN - RIGHTMARGIN;
@@ -422,7 +436,7 @@
 
         private void DrawLegend()
         {
-            foreach (var series in Series)
+            foreach (var series in ItemSource)
             {
                 var row = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(4) };
 

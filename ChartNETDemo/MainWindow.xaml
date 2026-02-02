@@ -142,7 +142,7 @@
                             GridLineBrush="Gainsboro"
                             GridLineThickness="1"
                             HorizontalGridLineCount="4"
-                            Lines="{Binding Path=ChartLines}"
+                            ItemSource="{Binding Path=ChartLines}"
                             VerticalGridLineCount="6"
                             XAxisTitle="Zeit (Jahre)"
                             XAxisTitleAlignment="Center"
@@ -198,7 +198,7 @@
                             Grid.Row="0"
                             Width="800"
                             Height="400"
-                            Series="{Binding Path=BarChartHorizontalSeries}"
+                            ItemSource="{Binding Path=BarChartHorizontalSeries}"
                             XAxisScaleFormat="Number"
                             XAxisTitle="Jahr"
                             XAxisTitleFontSize="14"
@@ -245,7 +245,7 @@
                             Width="800"
                             Height="400"
                             ShowTodayLine="true"
-                            Tasks="{Binding Path=Tasks}"
+                            ItemSource="{Binding Path=Tasks}"
                             TodayLineBrush="Red"
                             TodayLineThickness="1" />
                     </Grid>

@@ -43,15 +43,15 @@
 
         #region DependencyProperty
 
-        public IEnumerable<GanttTask> Tasks
+        public IEnumerable<GanttTask> ItemSource
         {
-            get => (IEnumerable<GanttTask>)GetValue(TasksProperty);
-            set => SetValue(TasksProperty, value);
+            get => (IEnumerable<GanttTask>)GetValue(ItemSourceProperty);
+            set => SetValue(ItemSourceProperty, value);
         }
 
-        public static readonly DependencyProperty TasksProperty =
+        public static readonly DependencyProperty ItemSourceProperty =
             DependencyProperty.Register(
-                nameof(Tasks),
+                nameof(ItemSource),
                 typeof(IEnumerable<GanttTask>),
                 typeof(GanttChartControl),
                 new PropertyMetadata(null, (_, __) => ((GanttChartControl)_).Redraw()));
@@ -120,7 +120,7 @@
         {
             PART_Canvas.Children.Clear();
 
-            if (this.Tasks == null || this.Tasks.Any() == false)
+            if (this.ItemSource == null || this.ItemSource.Any() == false)
             {
                 return;
             }
@@ -166,7 +166,7 @@
         /// </summary>
         private void DrawYAxisLabels()
         {
-            var taskList = this.Tasks.ToList();
+            var taskList = this.ItemSource.ToList();
 
             for (int i = 0; i < taskList.Count; i++)
             {
@@ -187,7 +187,7 @@
         /// </summary>
         private void DrawTasks()
         {
-            var taskList = Tasks.ToList();
+            var taskList = ItemSource.ToList();
 
             DateTime minDate = taskList.Min(t => t.Start);
             DateTime maxDate = taskList.Max(t => t.End);
@@ -225,7 +225,7 @@
         /// </summary>
         private void DrawXAxisLabels()
         {
-            var taskList = Tasks.ToList();
+            var taskList = ItemSource.ToList();
 
             DateTime minDate = taskList.Min(t => t.Start);
             DateTime maxDate = taskList.Max(t => t.End);
@@ -266,12 +266,12 @@
 
         private void DrawTodayLine()
         {
-            if (this.ShowTodayLine == false || this.Tasks == null || this.Tasks.Any() == false)
+            if (this.ShowTodayLine == false || this.ItemSource == null || this.ItemSource.Any() == false)
             {
                 return;
             }
 
-            var taskList = Tasks.ToList();
+            var taskList = ItemSource.ToList();
 
             DateTime minDate = taskList.Min(t => t.Start).Date;
             DateTime maxDate = taskList.Max(t => t.End).Date;
@@ -329,7 +329,7 @@
                 return;
             }
 
-            var taskList = Tasks.ToList();
+            var taskList = ItemSource.ToList();
             DateTime minDate = taskList.Min(t => t.Start);
             DateTime maxDate = taskList.Max(t => t.End);
 
