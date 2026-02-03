@@ -348,7 +348,9 @@
                     var series = seriesList[s];
                     double value = series.Values[i].Y;
                     if (value <= 0)
+                    {
                         continue;
+                    }
 
                     double height = value / maxValue * plotHeight;
                     double x = LEFTMARGIN + i * categoryStep + (categoryStep - groupWidth) / 2 + s * columnWidth;
@@ -361,7 +363,7 @@
                         Fill = series.Fill,
                         ToolTip = new ToolTip
                         {
-                            Content = "Tooltip"
+                            Content = $"Titel: {series.Title}\nWert: {value}"
                         }
                     };
 
