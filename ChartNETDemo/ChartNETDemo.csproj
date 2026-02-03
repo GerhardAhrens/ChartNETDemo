@@ -9,8 +9,8 @@
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <AnalysisLevel>latest-recommended</AnalysisLevel>
     <ApplicationIcon>Resources\Picture\ApplicationIcon.ico</ApplicationIcon>
-    <AssemblyVersion>1.0.2025.1</AssemblyVersion>
-    <FileVersion>1.0.2025.1</FileVersion>
+    <AssemblyVersion>1.0.2026.2</AssemblyVersion>
+    <FileVersion>1.0.2026.2</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

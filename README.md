@@ -35,3 +35,7 @@ Verschiedene Beispiele der Charts
 
 - Headmap Chart
 <img src="HeadmapChartDemo.png" style="width:650px;"/>
+
+## Versionshistorie
+[![Versionshistorie](https://img.shields.io/badge/Version-%201.0.2026.2-blue.svg)](#)
+- Zu allen Charts wurde eine Tooltip Funktion hinzugefügt.
