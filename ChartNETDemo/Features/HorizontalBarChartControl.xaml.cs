@@ -361,6 +361,9 @@
                         }
                     };
 
+                    ToolTipService.SetInitialShowDelay(rect, 100);
+                    ToolTipService.SetShowDuration(rect, 1500);
+
                     Canvas.SetLeft(rect, x);
                     Canvas.SetTop(rect, y);
                     this.PART_Canvas.Children.Add(rect);

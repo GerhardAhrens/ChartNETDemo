@@ -204,6 +204,9 @@
                 }
             };
 
+            ToolTipService.SetInitialShowDelay(border, 100);
+            ToolTipService.SetShowDuration(border, 1500);
+
             Canvas.SetLeft(border, rect.X);
             Canvas.SetTop(border, rect.Y);
             PART_Canvas.Children.Add(border);

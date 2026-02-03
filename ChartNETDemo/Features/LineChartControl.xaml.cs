@@ -24,6 +24,8 @@
 
         public string X { get; set; }      // z.B. "2021"
         public double Y { get; set; }       // z.B. 30
+        public double PosX { get; set; }
+        public double PosY { get; set; }
     }
 
     public class LineSeries
@@ -51,6 +53,8 @@
         private const double BottomMargin = 35;
         private const double TopMargin = 10;
         private const double RightMargin = 10;
+        private const double PointRadius = 6;
+        private readonly List<Ellipse> _dataPoints = new();
 
         public LineChartControl()
         {
@@ -472,7 +476,7 @@
                 return;
             }
 
-            foreach (var line in ItemSource)
+            foreach (var line in this.ItemSource)
             {
                 if (line.Values.Count < 2)
                 {
@@ -490,10 +494,51 @@
                     double x = LeftMargin + i * plotWidth / (line.Values.Count - 1);
                     double y = TopMargin + plotHeight - (line.Values[i].Value - min) / (max - min) * plotHeight;
 
+                    ChartPoint cp = new ChartPoint()
+                    {
+                        Category = line.Values[i].Category,
+                        Value = line.Values[i].Value,
+                        PosX = x,
+                        PosY = y
+                    };
+
+                    var dataPoint = new Ellipse
+                    {
+                        Width = PointRadius * 2,
+                        Height = PointRadius * 2,
+                        Fill = Brushes.DarkGreen,
+                        Stroke = Brushes.Black,
+                        StrokeThickness = 2,
+                        Tag = cp,
+                    };
+
                     polyline.Points.Add(new Point(x, y));
+                    _dataPoints.Add(dataPoint);
+                    this.ChartCanvas.Children.Add(dataPoint);
                 }
 
                 this.ChartCanvas.Children.Add(polyline);
+            }
+
+            this.UpdateLayoutPositions();
+        }
+
+        private void UpdateLayoutPositions()
+        {
+            var linePoint = this.ChartCanvas.Children.OfType<Polyline>().SelectMany(pl => pl.Points).ToList();
+            if (linePoint != null)
+            {
+                for (int i = 0; i < linePoint.Count; i++)
+                {
+                    Ellipse dp = _dataPoints[i];
+                    ChartPoint p = (ChartPoint)_dataPoints[i].Tag;
+                    Canvas.SetLeft(dp, p.PosX - PointRadius);
+                    Canvas.SetTop(dp, p.PosY - PointRadius);
+                    //dp.ToolTip = $"Kategorie: {p.Category}\nWert: {p.Value}";
+                    ToolTipService.SetInitialShowDelay(dp, 100);
+                    ToolTipService.SetShowDuration(dp, 1500);
+                    ToolTipService.SetToolTip(dp, $"Kategorie: {p.Category}\nWert: {p.Value}");
+                }
             }
         }
 

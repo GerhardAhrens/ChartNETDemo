@@ -260,6 +260,9 @@
                 }
             };
 
+            ToolTipService.SetInitialShowDelay(path, 100);
+            ToolTipService.SetShowDuration(path, 1500);
+
             PART_Canvas.Children.Add(path);
         }
 

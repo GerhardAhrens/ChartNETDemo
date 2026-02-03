@@ -211,8 +211,17 @@
                     Height = ROWHEIGHT - 10,
                     Fill = task.Fill,
                     RadiusX = 3,
-                    RadiusY = 3
+                    RadiusY = 3,
+
+                    /* Tooltip hinzufügen */
+                    ToolTip = new ToolTip
+                    {
+                        Content = $"Titel: {task.Title}\nStart: {task.Start.ToShortDateString()} \nEnde: {task.End.ToShortDateString()}"
+                    }
                 };
+
+                ToolTipService.SetInitialShowDelay(rect, 100);
+                ToolTipService.SetShowDuration(rect, 2500);
 
                 Canvas.SetLeft(rect, x);
                 Canvas.SetTop(rect, y);

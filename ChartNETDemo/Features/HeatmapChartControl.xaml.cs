@@ -264,6 +264,9 @@
                     ToolTip = $"{cell.X} / {cell.Y}\nWert: {cell.Value:0.##}"
                 };
 
+                ToolTipService.SetInitialShowDelay(rect, 100);
+                ToolTipService.SetShowDuration(rect, 1500);
+
                 rect.MouseEnter += (_, __) =>
                 {
                     this.HighlightLegend(cell.Value);
