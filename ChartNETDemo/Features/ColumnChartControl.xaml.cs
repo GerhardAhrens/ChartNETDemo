@@ -358,8 +358,15 @@
                     {
                         Width = columnWidth - 1,
                         Height = height,
-                        Fill = series.Fill
+                        Fill = series.Fill,
+                        ToolTip = new ToolTip
+                        {
+                            Content = "Tooltip"
+                        }
                     };
+
+                    ToolTipService.SetInitialShowDelay(rect, 100);
+                    ToolTipService.SetShowDuration(rect, 1500);
 
                     Canvas.SetLeft(rect, x);
                     Canvas.SetTop(rect, y);
