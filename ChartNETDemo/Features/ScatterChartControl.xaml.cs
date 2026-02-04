@@ -192,6 +192,7 @@
 
                 foreach (var p in ItemsSource)
                 {
+                    bool po = ReferenceEquals(p, ItemsSource.First());
                     double xNorm = (p.X - minX) / (maxX - minX);
                     double yNorm = (p.Y - minY) / (maxY - minY);
 
