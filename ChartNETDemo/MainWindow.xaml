@@ -115,6 +115,16 @@
             </Button>
 
             <Button
+                x:Name="BtnScatterChart"
+                Width="30"
+                Height="30"
+                Margin="5,0,0,0"
+                HorizontalAlignment="Left"
+                Tag="ScatterChart">
+                <Image Source="{StaticResource ResourceKey=IconScatterChart}" Stretch="None" />
+            </Button>
+
+            <Button
                 x:Name="BtnSaveToPng"
                 Width="30"
                 Height="30"
@@ -175,8 +185,8 @@
                         <local:BarChartControl
                             x:Name="MyBarChart"
                             Grid.Row="0"
-                            LegendPosition="Top"
                             ItemSource="{Binding Path=BarChartSeries}"
+                            LegendPosition="Top"
                             XAxisTitle="Jahr"
                             XAxisTitleFontSize="14"
                             XAxisTitleForeground="Green"
@@ -244,8 +254,8 @@
                             Grid.Row="1"
                             Width="800"
                             Height="400"
-                            ShowTodayLine="true"
                             ItemSource="{Binding Path=Tasks}"
+                            ShowTodayLine="true"
                             TodayLineBrush="Red"
                             TodayLineThickness="1" />
                     </Grid>
@@ -255,7 +265,6 @@
                     <Grid>
                         <local:TreemapChartControl
                             x:Name="MyTreeMapChart"
-                            Grid.Row="1"
                             Margin="0,0,10,40"
                             ItemSource="{Binding Path=Groups}"
                             LegendPosition="Top"
@@ -268,13 +277,18 @@
                     <Grid>
                         <local:HeatmapChartControl
                             x:Name="MyHeadmapChart"
-                            Grid.Row="1"
                             Margin="0,0,50,40"
                             ColorLegendTitle="Intensität"
                             ColorLegendTitleAlignment="Center"
                             ColorLegendTitleFontSize="13"
                             ColorLegendTitleForeground="DarkSlateGray"
                             ItemSource="{Binding Path=HeatmapCellSource}" />
+                    </Grid>
+                </TabItem>
+
+                <TabItem Header="Scatter Chart">
+                    <Grid>
+                        <local:ScatterChartControl x:Name="MyScatterChart" ItemsSource="{Binding Path=ScatterChartSource}" />
                     </Grid>
                 </TabItem>
             </TabControl>

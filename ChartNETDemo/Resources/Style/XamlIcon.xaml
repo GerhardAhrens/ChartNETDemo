@@ -65,13 +65,19 @@
 
     <DrawingImage x:Key="IconTreeMapChart">
         <DrawingImage.Drawing>
-            <GeometryDrawing Brush="Green" Geometry="M14,6H22V22H14V6M2,4H22V2H2V4M2,8H12V6H2V8M9,22H12V10H9V22M2,22H7V10H2V22Z" />
+            <GeometryDrawing Brush="Orange" Geometry="M14,6H22V22H14V6M2,4H22V2H2V4M2,8H12V6H2V8M9,22H12V10H9V22M2,22H7V10H2V22Z" />
         </DrawingImage.Drawing>
     </DrawingImage>
 
     <DrawingImage x:Key="IconHeadMapChart">
         <DrawingImage.Drawing>
             <GeometryDrawing Brush="Orange" Geometry="M14,6H22V22H14V6M2,4H22V2H2V4M2,8H12V6H2V8M9,22H12V10H9V22M2,22H7V10H2V22Z" />
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
+    <DrawingImage x:Key="IconScatterChart">
+        <DrawingImage.Drawing>
+            <GeometryDrawing Brush="Magenta" Geometry="M2,2H4V20H22V22H2V2M9,10A3,3 0 0,1 12,13A3,3 0 0,1 9,16A3,3 0 0,1 6,13A3,3 0 0,1 9,10M13,2A3,3 0 0,1 16,5A3,3 0 0,1 13,8A3,3 0 0,1 10,5A3,3 0 0,1 13,2M18,12A3,3 0 0,1 21,15A3,3 0 0,1 18,18A3,3 0 0,1 15,15A3,3 0 0,1 18,12Z" />
         </DrawingImage.Drawing>
     </DrawingImage>
 

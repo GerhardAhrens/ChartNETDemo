@@ -139,6 +139,16 @@ namespace ChartNETDemo
             }
         }
 
+        public ObservableCollection<ScatterPoint> ScatterChartSource
+        {
+            get;
+            set
+            {
+                field = value;
+                this.OnPropertyChanged();
+            }
+        }
+
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnCloseApplication, "Click", this.OnCloseApplication);
@@ -161,6 +171,7 @@ namespace ChartNETDemo
             this.GanttChartDemoData();
             this.TreeMapChartDemoData();
             this.HeadmapChartDemoData();
+            this.ScatterChartDemoData();
         }
 
         private void OnSelectedChart(object sender, RoutedEventArgs e)
@@ -532,6 +543,17 @@ namespace ChartNETDemo
                 new HeatmapCell { X = "Di", Y = "B", Value = 12 },
                 new HeatmapCell { X = "Mi", Y = "B", Value = 17 },
                 new HeatmapCell { X = "Do", Y = "B", Value = 7 }
+            };
+        }
+
+        private void ScatterChartDemoData()
+        {
+            this.ScatterChartSource = new ObservableCollection<ScatterPoint>
+            {
+                new() { X=1, Y=2, Category="Gruppe A", Color=Brushes.Red },
+                new() { X=2, Y=5, Category="Gruppe B", Color=Brushes.Blue },
+                new() { X=3, Y=3, Category="Gruppe A", Color=Brushes.Red },
+                new() { X=4, Y=6, Category="Gruppe C", Color=Brushes.Green } 
             };
         }
 
