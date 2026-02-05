@@ -160,6 +160,7 @@ namespace ChartNETDemo
             WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnGanttChart, "Click", this.OnSelectedChart);
             WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnTreeMapChart, "Click", this.OnSelectedChart);
             WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnHeadmapChart, "Click", this.OnSelectedChart);
+            WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnScatterChart, "Click", this.OnSelectedChart);
 
             WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnSaveToPng, "Click", this.OnChartSave);
 
@@ -211,6 +212,10 @@ namespace ChartNETDemo
                 {
                     this.ChartTabControl.SelectedIndex = 7;
                 }
+                else if (btn.Tag.ToString() == "ScatterChart")
+                {
+                    this.ChartTabControl.SelectedIndex = 8;
+                }
             }
         }
 
@@ -258,6 +263,11 @@ namespace ChartNETDemo
                 {
                     string demoDataImage = Path.Combine(this.DemoDataPath, "HeadmapChartDemo.png");
                     this.MyHeadmapChart.ExportToPng(demoDataImage);
+                }
+                else if (this.ChartTabControl.SelectedIndex == 8)
+                {
+                    string demoDataImage = Path.Combine(this.DemoDataPath, "ScatterChartDemo.png");
+                    this.MyScatterChart.ExportToPng(demoDataImage);
                 }
             }
         }
@@ -553,7 +563,10 @@ namespace ChartNETDemo
                 new() { X=1, Y=2, Category="Gruppe A", Color=Brushes.Red },
                 new() { X=2, Y=5, Category="Gruppe B", Color=Brushes.Blue },
                 new() { X=3, Y=3, Category="Gruppe A", Color=Brushes.Red },
-                new() { X=4, Y=6, Category="Gruppe C", Color=Brushes.Green } 
+                new() { X=4, Y=6, Category="Gruppe C", Color=Brushes.Green },
+                new() { X=4, Y=1, Category="Gruppe C", Color=Brushes.Green },
+                new() { X=4, Y=2, Category="Gruppe C", Color=Brushes.Green },
+                new() { X=4, Y=1.5, Category="Gruppe C", Color=Brushes.Green },
             };
         }
 

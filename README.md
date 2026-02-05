@@ -22,6 +22,7 @@ Implementierte Diagrammtypen:\
 | Gantt Chart    | Darstellung von Daten als gefüllte Fläche |
 | Treemap Chart    | Darstellung von Daten im Größenverhältnis |
 | Headmap Chart    | Darstellung von Daten im Verhältnis der Farbinensität |
+| Scatter Chart    | Darstellung von Daten in einem Streuungsdiagramm |
 
 Verschiedene Beispiele der Charts
 - Line Chart
@@ -36,6 +37,12 @@ Verschiedene Beispiele der Charts
 - Headmap Chart
 <img src="HeadmapChartDemo.png" style="width:650px;"/>
 
+- Scatter Chart
+<img src="ScatterChartDemo.png" style="width:650px;"/>
+
 ## Versionshistorie
+[![Versionshistorie](https://img.shields.io/badge/Version-%201.0.2026.3-blue.svg)](#)
+- Scatter Chart Control (Streuungsdiagramm) hinzugefügt
+
 [![Versionshistorie](https://img.shields.io/badge/Version-%201.0.2026.2-blue.svg)](#)
 - Zu allen Charts wurde eine Tooltip Funktion hinzugefügt.

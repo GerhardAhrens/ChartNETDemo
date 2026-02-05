@@ -288,7 +288,11 @@
 
                 <TabItem Header="Scatter Chart">
                     <Grid>
-                        <local:ScatterChartControl x:Name="MyScatterChart" ItemsSource="{Binding Path=ScatterChartSource}" />
+                        <local:ScatterChartControl
+                            x:Name="MyScatterChart"
+                            IsLogarithmicX="False"
+                            IsLogarithmicY="False"
+                            ItemsSource="{Binding Path=ScatterChartSource}" />
                     </Grid>
                 </TabItem>
             </TabControl>

@@ -15,146 +15,224 @@
     </UserControl.Resources>
 
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="160" />
-        </Grid.ColumnDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="160" />
+            </Grid.ColumnDefinitions>
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="40" />
+            </Grid.RowDefinitions>
 
-        <!--  =================== Diagram ===================  -->
+            <!--  ================= Plot Area =================  -->
 
-        <Border
-            Grid.Row="0"
-            Grid.Column="0"
-            Margin="5"
-            Background="White"
-            BorderBrush="#CCC"
-            BorderThickness="1">
+            <Border
+                Grid.Row="0"
+                Grid.Column="0"
+                Margin="6"
+                Background="White"
+                BorderBrush="#BBB"
+                BorderThickness="1">
 
-            <Canvas x:Name="PlotArea" ClipToBounds="True">
+                <Canvas x:Name="PlotArea" ClipToBounds="True">
 
-                <!--  Gridlines  -->
-                <ItemsControl ItemsSource="{Binding GridLines, RelativeSource={RelativeSource AncestorType=UserControl}}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <Canvas />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
+                    <!--  ===== Gridlines =====  -->
 
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Line
-                                Stroke="#E0E0E0"
-                                StrokeThickness="1"
-                                X1="{Binding X1}"
-                                X2="{Binding X2}"
-                                Y1="{Binding Y1}"
-                                Y2="{Binding Y2}" />
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                    <ItemsControl ItemsSource="{Binding GridLines, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Canvas />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
 
-                <!--  Scatter Points  -->
-                <ItemsControl ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=UserControl}}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <Canvas />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Line
+                                    Stroke="#E0E0E0"
+                                    StrokeThickness="1"
+                                    X1="{Binding X1}"
+                                    X2="{Binding X2}"
+                                    Y1="{Binding Y1}"
+                                    Y2="{Binding Y2}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
 
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Ellipse
-                                Canvas.Left="{Binding Path=PlotX}"
-                                Canvas.Top="{Binding Path=PlotY}"
-                                Width="10"
-                                Height="10"
-                                Fill="{Binding Path=Color}"
-                                Stroke="Black"
-                                StrokeThickness="0.5">
-                                <Ellipse.ToolTip>
-                                    <Border Padding="6" Background="#222">
-                                        <StackPanel>
-                                            <TextBlock
-                                                FontWeight="Bold"
-                                                Foreground="White"
-                                                Text="{Binding Category}" />
+                    <!--  ===== Scatter Points =====  -->
 
-                                            <TextBlock Foreground="White" Text="{Binding X, StringFormat=X: {0:F2}}" />
+                    <ItemsControl ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Canvas />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
 
-                                            <TextBlock Foreground="White" Text="{Binding Y, StringFormat=Y: {0:F2}}" />
-                                        </StackPanel>
-                                    </Border>
-                                </Ellipse.ToolTip>
-                            </Ellipse>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </Canvas>
-        </Border>
+                        <!--  WICHTIG: Position auf ContentPresenter  -->
+                        <ItemsControl.ItemContainerStyle>
+                            <Style TargetType="ContentPresenter">
+                                <Setter Property="Canvas.Left" Value="{Binding PlotX}" />
+                                <Setter Property="Canvas.Top" Value="{Binding PlotY}" />
+                            </Style>
+                        </ItemsControl.ItemContainerStyle>
 
-        <!--  =================== Legend ===================  -->
-
-        <Border
-            Grid.Row="0"
-            Grid.Column="1"
-            Margin="5"
-            Padding="8"
-            Background="White"
-            BorderBrush="#CCC"
-            BorderThickness="1">
-
-            <StackPanel>
-                <TextBlock
-                    Margin="0,0,0,6"
-                    FontWeight="Bold"
-                    Text="Legende" />
-
-                <ItemsControl ItemsSource="{Binding Legend, RelativeSource={RelativeSource AncestorType=UserControl}}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Margin="0,3" Orientation="Horizontal">
-
-                                <Rectangle
-                                    Width="14"
-                                    Height="14"
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Ellipse
+                                    Width="10"
+                                    Height="10"
                                     Fill="{Binding Color}"
                                     Stroke="Black"
-                                    StrokeThickness="0.5" />
+                                    StrokeThickness="0.5">
+                                    <!--  Mittelpunkt  -->
+                                    <Ellipse.RenderTransform>
+                                        <TranslateTransform X="-5" Y="-5" />
+                                    </Ellipse.RenderTransform>
 
-                                <TextBlock
-                                    Margin="6,0,0,0"
-                                    VerticalAlignment="Center"
-                                    Text="{Binding Name}" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </StackPanel>
-        </Border>
+                                    <Ellipse.ToolTip>
+                                        <StackPanel>
+                                            <TextBlock FontWeight="Bold" Text="{Binding Category}" />
+                                            <TextBlock Text="{Binding X, StringFormat=X: {0:F2}}" />
+                                            <TextBlock Text="{Binding Y, StringFormat=Y: {0:F2}}" />
+                                        </StackPanel>
+                                    </Ellipse.ToolTip>
+                                </Ellipse>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
 
-        <!--  =================== Axis titles ===================  -->
+                    <!--  ===== X Axis Ticks =====  -->
 
-        <TextBlock
-            Grid.Row="1"
-            Grid.Column="0"
-            Margin="0,6"
-            HorizontalAlignment="Center"
-            FontWeight="SemiBold"
-            Text="X-Achse" />
+                    <ItemsControl ItemsSource="{Binding XTicks, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Canvas />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
 
-        <TextBlock
-            Grid.Row="0"
-            Grid.Column="0"
-            Margin="6,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Center"
-            FontWeight="SemiBold"
-            LayoutTransform="{StaticResource ResourceKey=Rotate90}"
-            Text="Y-Achse" />
+                        <ItemsControl.ItemContainerStyle>
+                            <Style TargetType="ContentPresenter">
+                                <Setter Property="Canvas.Left" Value="{Binding Position}" />
+                                <Setter Property="Canvas.Top" Value="{Binding RelativeSource={RelativeSource AncestorType=Canvas}, Path=ActualHeight}" />
+                            </Style>
+                        </ItemsControl.ItemContainerStyle>
+
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <Line
+                                        Stroke="Black"
+                                        X1="0"
+                                        X2="0"
+                                        Y1="0"
+                                        Y2="6" />
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        FontSize="11"
+                                        Text="{Binding Label}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <!--  ===== Y Axis Ticks =====  -->
+
+                    <ItemsControl ItemsSource="{Binding YTicks, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Canvas />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+
+                        <ItemsControl.ItemContainerStyle>
+                            <Style TargetType="ContentPresenter">
+                                <Setter Property="Canvas.Left" Value="0" />
+                                <Setter Property="Canvas.Top" Value="{Binding Position}" />
+                            </Style>
+                        </ItemsControl.ItemContainerStyle>
+
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Line
+                                        Stroke="Black"
+                                        X1="0"
+                                        X2="6"
+                                        Y1="0"
+                                        Y2="0" />
+                                    <TextBlock
+                                        Margin="4,-6,0,0"
+                                        FontSize="11"
+                                        Text="{Binding Label}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                </Canvas>
+            </Border>
+
+            <!--  ================= Legend =================  -->
+
+            <Border
+                Grid.Row="0"
+                Grid.Column="1"
+                Margin="6"
+                Padding="8"
+                Background="White"
+                BorderBrush="#BBB"
+                BorderThickness="1">
+
+                <StackPanel>
+                    <TextBlock
+                        Margin="0,0,0,6"
+                        FontWeight="Bold"
+                        Text="Legende" />
+
+                    <ItemsControl ItemsSource="{Binding Legend, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Margin="0,3" Orientation="Horizontal">
+                                    <Rectangle
+                                        Width="14"
+                                        Height="14"
+                                        Fill="{Binding Color}"
+                                        Stroke="Black"
+                                        StrokeThickness="0.5" />
+                                    <TextBlock
+                                        Margin="6,0,0,0"
+                                        VerticalAlignment="Center"
+                                        Text="{Binding Name}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <!--  ================= Axis Titles =================  -->
+
+            <TextBlock
+                Grid.Row="1"
+                Grid.Column="0"
+                HorizontalAlignment="Center"
+                FontWeight="SemiBold"
+                Text="X-Achse" />
+
+            <TextBlock
+                Grid.Row="0"
+                Grid.Column="0"
+                Margin="4,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                FontWeight="SemiBold"
+                Text="Y-Achse">
+
+                <TextBlock.LayoutTransform>
+                    <RotateTransform Angle="-90" />
+                </TextBlock.LayoutTransform>
+            </TextBlock>
+        </Grid>
     </Grid>
 </UserControl>
