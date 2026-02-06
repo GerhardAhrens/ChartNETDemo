@@ -92,9 +92,9 @@
 
                                     <Ellipse.ToolTip>
                                         <StackPanel>
-                                            <TextBlock FontWeight="Bold" Text="{Binding Category}" />
-                                            <TextBlock Text="{Binding X, StringFormat=X: {0:F2}}" />
-                                            <TextBlock Text="{Binding Y, StringFormat=Y: {0:F2}}" />
+                                            <TextBlock FontWeight="Bold" Text="{Binding Path=Category}" />
+                                            <TextBlock Text="{Binding Path=X, StringFormat=X: {0:F2}}" />
+                                            <TextBlock Text="{Binding Path=Y, StringFormat=Y: {0:F2}}" />
                                         </StackPanel>
                                     </Ellipse.ToolTip>
                                 </Ellipse>

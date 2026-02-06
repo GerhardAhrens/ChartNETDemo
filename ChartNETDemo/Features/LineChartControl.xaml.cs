@@ -534,7 +534,6 @@
                     ChartPoint p = (ChartPoint)_dataPoints[i].Tag;
                     Canvas.SetLeft(dp, p.PosX - PointRadius);
                     Canvas.SetTop(dp, p.PosY - PointRadius);
-                    //dp.ToolTip = $"Kategorie: {p.Category}\nWert: {p.Value}";
                     ToolTipService.SetInitialShowDelay(dp, 100);
                     ToolTipService.SetShowDuration(dp, 1500);
                     ToolTipService.SetToolTip(dp, $"Kategorie: {p.Category}\nWert: {p.Value}");

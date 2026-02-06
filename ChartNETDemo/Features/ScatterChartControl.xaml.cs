@@ -20,13 +20,13 @@
         private double _plotX;
         public double PlotX
         {
-            get => _plotX;
+            get => this._plotX;
             set
             {
-                if (_plotX != value)
+                if (this._plotX != value)
                 {
-                    _plotX = value;
-                    OnPropertyChanged();
+                    this._plotX = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
@@ -34,13 +34,13 @@
         private double _plotY;
         public double PlotY
         {
-            get => _plotY;
+            get => this._plotY;
             set
             {
-                if (_plotY != value)
+                if (this._plotY != value)
                 {
-                    _plotY = value;
-                    OnPropertyChanged();
+                    this._plotY = value;
+                    this.OnPropertyChanged();
                 }
             }
         }
@@ -80,9 +80,9 @@
 
         public ScatterChartControl()
         {
-            InitializeComponent();
-            this.Loaded += (_, __) => Recalculate();
-            this.PlotArea.SizeChanged += (_, __) => Recalculate();
+            this.InitializeComponent();
+            this.Loaded += (_, __) => this.Recalculate();
+            this.PlotArea.SizeChanged += (_, __) => this.Recalculate();
         }
 
         #region ItemsSource DP
@@ -213,10 +213,10 @@
                 // Datenbereich bestimmen
                 // -----------------------------
 
-                double minX = ItemsSource.Min(p => p.X);
-                double maxX = ItemsSource.Max(p => p.X);
-                double minY = ItemsSource.Min(p => p.Y);
-                double maxY = ItemsSource.Max(p => p.Y);
+                double minX = this.ItemsSource.Min(p => p.X);
+                double maxX = this.ItemsSource.Max(p => p.X);
+                double minY = this.ItemsSource.Min(p => p.Y);
+                double maxY = this.ItemsSource.Max(p => p.Y);
 
                 // Sicherheit (für Log & Linear)
                 if (maxX - minX <= 0)
@@ -230,12 +230,12 @@
                 }
 
                 // Log braucht > 0
-                if (IsLogarithmicX == true)
+                if (this.IsLogarithmicX == true)
                 {
                     minX = Math.Max(minX, 1e-6);
                 }
 
-                if (IsLogarithmicY == true)
+                if (this.IsLogarithmicY == true)
                 {
                     minY = Math.Max(minY, 1e-6);
                 }
@@ -244,11 +244,11 @@
                 double plotHeight = height - PADDING * 2;
 
                 /* Skalen vorbereiten */
-                double xMinScale = IsLogarithmicX ? Math.Log10(minX) : minX;
-                double xMaxScale = IsLogarithmicX ? Math.Log10(maxX) : maxX;
+                double xMinScale = this.IsLogarithmicX ? Math.Log10(minX) : minX;
+                double xMaxScale = this.IsLogarithmicX ? Math.Log10(maxX) : maxX;
 
-                double yMinScale = IsLogarithmicY ? Math.Log10(minY) : minY;
-                double yMaxScale = IsLogarithmicY ? Math.Log10(maxY) : maxY;
+                double yMinScale = this.IsLogarithmicY ? Math.Log10(minY) : minY;
+                double yMaxScale = this.IsLogarithmicY ? Math.Log10(maxY) : maxY;
 
                 if (xMaxScale - xMinScale <= 0)
                 {
@@ -260,10 +260,10 @@
                 }
 
                 /* Punkte skalieren */
-                foreach (var p in ItemsSource)
+                foreach (var p in this.ItemsSource)
                 {
-                    double xValue = IsLogarithmicX ? Math.Log10(Math.Max(p.X, 1e-6)) : p.X;
-                    double yValue = IsLogarithmicY ? Math.Log10(Math.Max(p.Y, 1e-6)) : p.Y;
+                    double xValue = this.IsLogarithmicX ? Math.Log10(Math.Max(p.X, 1e-6)) : p.X;
+                    double yValue = this.IsLogarithmicY ? Math.Log10(Math.Max(p.Y, 1e-6)) : p.Y;
 
                     double xNorm = (xValue - xMinScale) / (xMaxScale - xMinScale);
                     double yNorm = (yValue - yMinScale) / (yMaxScale - yMinScale);
@@ -298,7 +298,7 @@
                 double t = (double)i / (ticks - 1);
                 double value = min + t * (max - min);
 
-                XTicks.Add(new AxisTick
+                this.XTicks.Add(new AxisTick
                 {
                     Position = PADDING + t * width,
                     Label = value.ToString("0.##", CultureInfo.CurrentCulture)
@@ -315,7 +315,7 @@
                 double t = (double)i / (ticks - 1);
                 double value = min + t * (max - min);
 
-                YTicks.Add(new AxisTick
+                this.YTicks.Add(new AxisTick
                 {
                     Position = PADDING + (1 - t) * height,
                     Label = value.ToString("0.##", CultureInfo.CurrentCulture)
@@ -325,9 +325,9 @@
 
         private void BuildLogOrLinearX(double min, double max, double plotWidth)
         {
-            if (!IsLogarithmicX)
+            if (this.IsLogarithmicX == false)
             {
-                BuildLinearXTicks(min, max, plotWidth);
+                this.BuildLinearXTicks(min, max, plotWidth);
                 return;
             }
 
@@ -344,11 +344,13 @@
                     double value = i * Math.Pow(10, decade);
 
                     if (value < min || value > max)
+                    {
                         continue;
+                    }
 
                     double norm = (Math.Log10(value) - logMin) / (logMax - logMin);
 
-                    XTicks.Add(new AxisTick
+                    this.XTicks.Add(new AxisTick
                     {
                         Position = PADDING + norm * plotWidth,
                         Label = value.ToString("0.##", CultureInfo.CurrentCulture)
@@ -359,9 +361,9 @@
 
         private void BuildLogOrLinearY(double min, double max, double plotHeight)
         {
-            if (!IsLogarithmicY)
+            if (this.IsLogarithmicY == false)
             {
-                BuildLinearYTicks(min, max, plotHeight);
+                this.BuildLinearYTicks(min, max, plotHeight);
                 return;
             }
 
@@ -378,7 +380,9 @@
                     double value = i * Math.Pow(10, decade);
 
                     if (value < min || value > max)
+                    {
                         continue;
+                    }
 
                     double norm = (Math.Log10(value) - logMin) / (logMax - logMin);
 
@@ -398,7 +402,9 @@
         public void ExportToPng(string filePath, double dpi = 96)
         {
             if (ActualWidth == 0 || ActualHeight == 0)
+            {
                 return;
+            }
 
             // Layout aktualisieren erzwingen
             Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));

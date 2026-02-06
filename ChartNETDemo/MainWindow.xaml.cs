@@ -563,10 +563,12 @@ namespace ChartNETDemo
                 new() { X=1, Y=2, Category="Gruppe A", Color=Brushes.Red },
                 new() { X=2, Y=5, Category="Gruppe B", Color=Brushes.Blue },
                 new() { X=3, Y=3, Category="Gruppe A", Color=Brushes.Red },
+                new() { X=1, Y=1, Category="Gruppe C", Color=Brushes.Green },
                 new() { X=4, Y=6, Category="Gruppe C", Color=Brushes.Green },
                 new() { X=4, Y=1, Category="Gruppe C", Color=Brushes.Green },
                 new() { X=4, Y=2, Category="Gruppe C", Color=Brushes.Green },
                 new() { X=4, Y=1.5, Category="Gruppe C", Color=Brushes.Green },
+                new() { X=10, Y=10, Category="Gruppe C", Color=Brushes.Green },
             };
         }
 
