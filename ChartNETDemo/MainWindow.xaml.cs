@@ -311,7 +311,7 @@ namespace ChartNETDemo
                                 new ChartPoint { Category = "2024", Value = 45 }
                             }
                         },
-                                        new ChartLine
+                        new ChartLine
                         {
                             Title = "Kosten",
                             Stroke = Brushes.Blue,
