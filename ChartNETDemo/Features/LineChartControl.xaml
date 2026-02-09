@@ -25,7 +25,7 @@
         <ItemsControl
             Grid.Column="1"
             Background="White"
-            ItemsSource="{Binding Path=Lines, ElementName=root}">
+            ItemsSource="{Binding Path=ItemSource, ElementName=root}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Margin="5" Orientation="Horizontal">
