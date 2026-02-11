@@ -1,8 +1,10 @@
 ﻿namespace ChartNETDemo
 {
     using System.Collections.ObjectModel;
+    using System.ComponentModel;
     using System.Diagnostics;
     using System.Globalization;
+    using System.Runtime.CompilerServices;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Media;
@@ -10,24 +12,181 @@
     using System.Windows.Shapes;
 
     [DebuggerDisplay("Titel: {this.Title}; Anzahl: {this.Values.Count}")]
-    public class ChartLine
+    public class ChartLine : INotifyPropertyChanged
     {
-        public string Title { get; set; }
-        public IList<ChartPoint> Values { get; set; } = new List<ChartPoint>();
-        public Brush Stroke { get; set; } = Brushes.Blue;
-        public double StrokeThickness { get; set; } = 2;
+        private string _Title;
+
+        public string Title
+        {
+            get { return this._Title; }
+            set
+            {
+                if (this._Title != value)
+                {
+                    this._Title = value;
+                    this.OnPropertyChanged();
+                }
+            }
+        }
+
+        private IList<ChartPoint> _Values = new List<ChartPoint>();
+
+        public IList<ChartPoint> Values
+        {
+            get { return this._Values; }
+            set
+            {
+                if (this._Values != value)
+                {
+                    this._Values = value;
+                    this.OnPropertyChanged();
+                }
+            }
+        }
+
+        private Brush _Stroke = Brushes.Blue;
+
+        public Brush Stroke
+        {
+            get { return this._Stroke; }
+            set
+            {
+                if (this._Stroke != value)
+                {
+                    this._Stroke = value;
+                    this.OnPropertyChanged();
+                }
+            }
+        }
+
+        private double _StrokeThickness = 2;
+
+        public double StrokeThickness
+        {
+            get { return this._StrokeThickness; }
+            set
+            {
+                if (this._StrokeThickness != value)
+                {
+                    this._StrokeThickness = value;
+                    this.OnPropertyChanged();
+                }
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string name = null)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
     [DebuggerDisplay("Category: {this.Category}; Value: {this.Value}")]
-    public class ChartPoint
+    public class ChartPoint : INotifyPropertyChanged
     {
-        public string Category { get; set; }   // X-Achse
-        public double Value { get; set; }       // Y-Achse
+        /// <summary>
+        /// Category; X-Achse, Legende
+        /// </summary>
+        private string _Category;
 
-        public string X { get; set; }      // z.B. "2021"
-        public double Y { get; set; }       // z.B. 30
-        public double PosX { get; set; }
-        public double PosY { get; set; }
+        public string Category
+        {
+            get { return this._Category; }
+            set
+            {
+                if (this._Category != value)
+                {
+                    this._Category = value;
+                    this.OnPropertyChanged();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Werte, Y-Achse, Legende
+        /// </summary>
+        private double _Value;
+
+        public double Value
+        {
+            get { return this._Value; }
+            set
+            {
+                if (this._Value != value)
+                {
+                    this._Value = value;
+                    this.OnPropertyChanged();
+                }
+            }
+        }
+
+        /// <summary>
+        /// z.B. "2021"
+        /// </summary>
+        private string _X;
+
+        public string X
+        {
+            get { return this._X; }
+            set
+            {
+                if (this._X != value)
+                {
+                    this._X = value;
+                    this.OnPropertyChanged();
+                }
+            }
+        }
+
+        /// <summary>
+        /// z.B. 30
+        /// </summary>
+        private double _Y;
+
+        public double Y
+        {
+            get { return this._Y; }
+            set
+            {
+                if (this._Y != value)
+                {
+                    this._Y = value;
+                    this.OnPropertyChanged();
+                }
+            }
+        }
+
+        private double _PosX;
+
+        public double PosX
+        {
+            get { return this._PosX; }
+            set
+            {
+                if (this._PosX != value)
+                {
+                    this._PosX = value;
+                    this.OnPropertyChanged();
+                }
+            }
+        }
+
+        private double _PosY;
+
+        public double PosY
+        {
+            get { return this._PosY; }
+            set
+            {
+                if (this._PosY != value)
+                {
+                    this._PosY = value;
+                    this.OnPropertyChanged();
+                }
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string name = null)
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
     public enum AxisTitleAlignment

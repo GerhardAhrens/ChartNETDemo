@@ -33,8 +33,11 @@
                             Width="16"
                             Height="3"
                             VerticalAlignment="Center"
-                            Fill="{Binding Stroke}" />
-                        <TextBlock Margin="6,0,0,0" Text="{Binding Title}" />
+                            Fill="{Binding Path=Stroke}" />
+                        <TextBlock
+                            Margin="6,0,0,0"
+                            FontWeight="Medium"
+                            Text="{Binding Path=Title}" />
                     </StackPanel>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
