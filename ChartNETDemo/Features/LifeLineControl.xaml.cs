@@ -94,7 +94,68 @@
                 nameof(ChartBackground),
                 typeof(Brush),
                 typeof(LifeLineControl),
-                new PropertyMetadata(Brushes.Black));
+                new PropertyMetadata(null, OnBackgroundChanged));
+
+        public double MinorGridSpacing
+        {
+            get => (double)GetValue(MinorGridSpacingProperty);
+            set => SetValue(MinorGridSpacingProperty, value);
+        }
+
+        public static readonly DependencyProperty MinorGridSpacingProperty =
+            DependencyProperty.Register(
+                nameof(MinorGridSpacing),
+                typeof(double),
+                typeof(LifeLineControl),
+                new PropertyMetadata(10.0, OnGridChanged));
+
+
+        public double MajorGridSpacing
+        {
+            get => (double)GetValue(MajorGridSpacingProperty);
+            set => SetValue(MajorGridSpacingProperty, value);
+        }
+
+        public static readonly DependencyProperty MajorGridSpacingProperty =
+            DependencyProperty.Register(
+                nameof(MajorGridSpacing),
+                typeof(double),
+                typeof(LifeLineControl),
+                new PropertyMetadata(50.0, OnGridChanged));
+
+
+        public Brush MinorGridBrush
+        {
+            get => (Brush)GetValue(MinorGridBrushProperty);
+            set => SetValue(MinorGridBrushProperty, value);
+        }
+
+        public static readonly DependencyProperty MinorGridBrushProperty =
+            DependencyProperty.Register(
+                nameof(MinorGridBrush),
+                typeof(Brush),
+                typeof(LifeLineControl),
+                new PropertyMetadata(new SolidColorBrush(Color.FromArgb(40, 255, 0, 0)), OnGridChanged));
+
+
+        public Brush MajorGridBrush
+        {
+            get => (Brush)GetValue(MajorGridBrushProperty);
+            set => SetValue(MajorGridBrushProperty, value);
+        }
+
+        public static readonly DependencyProperty MajorGridBrushProperty =
+            DependencyProperty.Register(
+                nameof(MajorGridBrush),
+                typeof(Brush),
+                typeof(LifeLineControl),
+                new PropertyMetadata(new SolidColorBrush(Color.FromArgb(90, 255, 0, 0)), OnGridChanged));
+
+
+        private static void OnGridChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((LifeLineControl)d).RedrawAll();
+        }
         #endregion
 
         #region PropertyChanged Callbacks
@@ -108,6 +169,11 @@
         private static void OnScaleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             ((LifeLineControl)d).RedrawAll();
+        }
+
+        private static void OnBackgroundChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((LifeLineControl)d).Background = e.NewValue as Brush;
         }
 
         #endregion
@@ -200,12 +266,13 @@
                 return;
 
             PART_Canvas.Children.Clear();
-            DrawAxes();
+
+            DrawGrid();   // zuerst Grid
+            DrawAxes();   // dann Achsen
 
             foreach (var kvp in _lineMap)
             {
                 PART_Canvas.Children.Add(kvp.Value);
-                DrawLine(kvp.Key);
             }
         }
 
@@ -281,6 +348,70 @@
             PART_Canvas.Children.Add(yAxis);
         }
 
+        private void DrawGrid()
+        {
+            double width = PART_Canvas.ActualWidth;
+            double height = PART_Canvas.ActualHeight - BottomMargin;
+
+            if (width <= 0 || height <= 0)
+                return;
+
+            // 🔹 Minor Vertical Lines
+            for (double x = LeftMargin; x <= width; x += MinorGridSpacing)
+            {
+                PART_Canvas.Children.Add(new Line
+                {
+                    X1 = x,
+                    Y1 = 0,
+                    X2 = x,
+                    Y2 = height,
+                    Stroke = MinorGridBrush,
+                    StrokeThickness = 1
+                });
+            }
+
+            // 🔹 Minor Horizontal Lines
+            for (double y = 0; y <= height; y += MinorGridSpacing)
+            {
+                PART_Canvas.Children.Add(new Line
+                {
+                    X1 = LeftMargin,
+                    Y1 = y,
+                    X2 = width,
+                    Y2 = y,
+                    Stroke = MinorGridBrush,
+                    StrokeThickness = 1
+                });
+            }
+
+            // 🔹 Major Vertical Lines
+            for (double x = LeftMargin; x <= width; x += MajorGridSpacing)
+            {
+                PART_Canvas.Children.Add(new Line
+                {
+                    X1 = x,
+                    Y1 = 0,
+                    X2 = x,
+                    Y2 = height,
+                    Stroke = MajorGridBrush,
+                    StrokeThickness = 1.5
+                });
+            }
+
+            // 🔹 Major Horizontal Lines
+            for (double y = 0; y <= height; y += MajorGridSpacing)
+            {
+                PART_Canvas.Children.Add(new Line
+                {
+                    X1 = LeftMargin,
+                    Y1 = y,
+                    X2 = width,
+                    Y2 = y,
+                    Stroke = MajorGridBrush,
+                    StrokeThickness = 1.5
+                });
+            }
+        }
         #endregion    
     }
 }

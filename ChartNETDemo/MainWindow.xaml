@@ -310,9 +310,12 @@
                     <Grid>
                         <local:LifeLineControl
                             x:Name="MyLifeLineChart"
+                            ChartBackground="Black"
                             ItemsSource="{Binding Path=LifeChartSource, UpdateSourceTrigger=PropertyChanged}"
+                            MajorGridSpacing="50"
                             MaxValue="150"
-                            MinValue="-150" />
+                            MinValue="-150"
+                            MinorGridSpacing="10" />
                     </Grid>
                 </TabItem>
             </TabControl>
