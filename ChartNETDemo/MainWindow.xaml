@@ -125,6 +125,16 @@
             </Button>
 
             <Button
+                x:Name="BtnLifeLineChart"
+                Width="30"
+                Height="30"
+                Margin="5,0,0,0"
+                HorizontalAlignment="Left"
+                Tag="LifeLineChart">
+                <Image Source="{StaticResource ResourceKey=IconLifeLineChart}" Stretch="None" />
+            </Button>
+
+            <Button
                 x:Name="BtnSaveToPng"
                 Width="30"
                 Height="30"
@@ -293,6 +303,16 @@
                             IsLogarithmicX="False"
                             IsLogarithmicY="False"
                             ItemsSource="{Binding Path=ScatterChartSource}" />
+                    </Grid>
+                </TabItem>
+
+                <TabItem Header="Life Line Chart">
+                    <Grid>
+                        <local:LifeLineControl
+                            x:Name="MyLifeLineChart"
+                            ItemsSource="{Binding Path=LifeChartSource, UpdateSourceTrigger=PropertyChanged}"
+                            MaxValue="150"
+                            MinValue="-150" />
                     </Grid>
                 </TabItem>
             </TabControl>

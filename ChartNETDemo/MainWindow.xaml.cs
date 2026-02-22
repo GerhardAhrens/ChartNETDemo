@@ -22,6 +22,7 @@ namespace ChartNETDemo
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Media;
+    using System.Windows.Threading;
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -29,6 +30,7 @@ namespace ChartNETDemo
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
+        private Random _rand = new();
 
         public MainWindow()
         {
@@ -149,6 +151,16 @@ namespace ChartNETDemo
             }
         }
 
+        public ObservableCollection<LifeChartData> LifeChartSource
+        {
+            get;
+            set
+            {
+                field = value;
+                this.OnPropertyChanged();
+            }
+        }
+
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnCloseApplication, "Click", this.OnCloseApplication);
@@ -161,6 +173,7 @@ namespace ChartNETDemo
             WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnTreeMapChart, "Click", this.OnSelectedChart);
             WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnHeadmapChart, "Click", this.OnSelectedChart);
             WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnScatterChart, "Click", this.OnSelectedChart);
+            WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnLifeLineChart, "Click", this.OnSelectedChart);
 
             WeakEventManager<Button, RoutedEventArgs>.AddHandler(this.BtnSaveToPng, "Click", this.OnChartSave);
 
@@ -173,6 +186,7 @@ namespace ChartNETDemo
             this.TreeMapChartDemoData();
             this.HeadmapChartDemoData();
             this.ScatterChartDemoData();
+            this.LifeChartDemoData();
         }
 
         private void OnSelectedChart(object sender, RoutedEventArgs e)
@@ -215,6 +229,10 @@ namespace ChartNETDemo
                 else if (btn.Tag.ToString() == "ScatterChart")
                 {
                     this.ChartTabControl.SelectedIndex = 8;
+                }
+                else if (btn.Tag.ToString() == "LifeLineChart")
+                {
+                    this.ChartTabControl.SelectedIndex = 9;
                 }
             }
         }
@@ -570,6 +588,45 @@ namespace ChartNETDemo
                 new() { X=4, Y=1.5, Category="Gruppe C", Color=Brushes.Green },
                 new() { X=10, Y=10, Category="Gruppe C", Color=Brushes.Green },
             };
+        }
+
+        private void LifeChartDemoData()
+        {
+            this.LifeChartSource = new();
+
+            var line1 = new LifeChartData
+            {
+                Name = "Signal 1",
+                Stroke = Brushes.Lime
+            };
+
+            var line2 = new LifeChartData
+            {
+                Name = "Signal 2",
+                Stroke = Brushes.Red
+            };
+
+            this.LifeChartSource.Add(line1);
+            this.LifeChartSource.Add(line2);
+
+            var timer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(50)
+            };
+
+            timer.Tick += (_, _) =>
+            {
+                if (line1.Values.Count > 300)
+                {
+                    line1.Values.RemoveAt(0);
+                    line2.Values.RemoveAt(0);
+                }
+
+                line1.Values.Add(Math.Sin(DateTime.Now.Millisecond / 100.0) * 80);
+                line2.Values.Add((_rand.NextDouble() - 0.5) * 150);
+            };
+
+            timer.Start();
         }
 
         #region INotifyPropertyChanged implementierung
