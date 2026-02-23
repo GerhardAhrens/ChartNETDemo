@@ -5,11 +5,36 @@
     using System.Collections.ObjectModel;
     using System.Collections.Specialized;
     using System.ComponentModel;
+    using System.Globalization;
     using System.Runtime.CompilerServices;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Media;
     using System.Windows.Shapes;
+
+    public class GridVisualHost : FrameworkElement
+    {
+        private readonly VisualCollection _children;
+        private DrawingVisual _gridVisual;
+
+        public GridVisualHost()
+        {
+            _children = new VisualCollection(this);
+            _gridVisual = new DrawingVisual();
+            _children.Add(_gridVisual);
+        }
+
+        public void Draw(Action<DrawingContext> drawAction)
+        {
+            using var dc = _gridVisual.RenderOpen();
+            drawAction(dc);
+        }
+
+        protected override int VisualChildrenCount => _children.Count;
+
+        protected override Visual GetVisualChild(int index)
+            => _children[index];
+    }
 
     public class LifeChartData : INotifyPropertyChanged
     {
@@ -32,16 +57,25 @@
         private const double LeftMargin = 50;
         private const double BottomMargin = 30;
 
+        private GridVisualHost _gridHost;
         private readonly Dictionary<LifeChartData, Polyline> _lineMap = new();
         private INotifyCollectionChanged _currentCollection;
+        private readonly List<TextBlock> _axisLabels = new();
 
         public LifeLineControl()
         {
             InitializeComponent();
+
+            _gridHost = new GridVisualHost();
+
+            // Grid ganz nach hinten
+            Canvas.SetZIndex(_gridHost, -100);
+
+            PART_Canvas.Children.Add(_gridHost);
+
             Loaded += (_, _) => RedrawAll();
             SizeChanged += (_, _) => RedrawAll();
         }
-
         #region DependencyProperties
 
         public IEnumerable ItemsSource
@@ -68,7 +102,7 @@
                 nameof(MinValue),
                 typeof(double),
                 typeof(LifeLineControl),
-                new PropertyMetadata(-100.0, OnScaleChanged));
+                new PropertyMetadata(-150.0, OnScaleChanged));
 
         public double MaxValue
         {
@@ -81,7 +115,20 @@
                 nameof(MaxValue),
                 typeof(double),
                 typeof(LifeLineControl),
-                new PropertyMetadata(100.0, OnScaleChanged));
+                new PropertyMetadata(150.0, OnScaleChanged));
+
+        public double XStep
+        {
+            get => (double)GetValue(XStepProperty);
+            set => SetValue(XStepProperty, value);
+        }
+
+        public static readonly DependencyProperty XStepProperty =
+            DependencyProperty.Register(
+                nameof(XStep),
+                typeof(double),
+                typeof(LifeLineControl),
+                new PropertyMetadata(20.0));
 
         public Brush ChartBackground
         {
@@ -152,13 +199,14 @@
                 new PropertyMetadata(new SolidColorBrush(Color.FromArgb(90, 255, 0, 0)), OnGridChanged));
 
 
+        #endregion
+
+        #region PropertyChanged Callbacks
+
         private static void OnGridChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             ((LifeLineControl)d).RedrawAll();
         }
-        #endregion
-
-        #region PropertyChanged Callbacks
 
         private static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -186,8 +234,13 @@
             if (_currentCollection != null)
                 _currentCollection.CollectionChanged -= OnCollectionChanged;
 
+            // Nur Linien entfernen
+            foreach (var line in _lineMap.Values)
+            {
+                PART_Canvas.Children.Remove(line);
+            }
+
             _lineMap.Clear();
-            PART_Canvas.Children.Clear();
 
             if (newCollection == null)
                 return;
@@ -203,7 +256,7 @@
                 AddLine(line);
             }
 
-            DrawAxes();
+            RedrawAll();
         }
 
         private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -265,18 +318,69 @@
             if (!IsLoaded)
                 return;
 
-            PART_Canvas.Children.Clear();
-
-            DrawGrid();   // zuerst Grid
-            DrawAxes();   // dann Achsen
+            DrawGrid();
+            DrawAxes();
+            DrawAxisLabels();
 
             foreach (var kvp in _lineMap)
             {
-                PART_Canvas.Children.Add(kvp.Value);
+                if (!PART_Canvas.Children.Contains(kvp.Value))
+                    PART_Canvas.Children.Add(kvp.Value);
             }
         }
 
-        private const double XStep = 10;
+        private void DrawGrid()
+        {
+            double width = PART_Canvas.ActualWidth;
+            double height = PART_Canvas.ActualHeight - BottomMargin;
+
+            if (width <= 0 || height <= 0)
+                return;
+
+            _gridHost.Width = width;
+            _gridHost.Height = height;
+
+            _gridHost.Draw(dc =>
+            {
+                var minorPen = new Pen(MinorGridBrush, 1);
+                var majorPen = new Pen(MajorGridBrush, 1.5);
+
+                minorPen.Freeze();
+                majorPen.Freeze();
+
+                // Minor Vertical
+                for (double x = LeftMargin; x <= width; x += MinorGridSpacing)
+                {
+                    dc.DrawLine(minorPen,
+                        new Point(x, 0),
+                        new Point(x, height));
+                }
+
+                // Minor Horizontal
+                for (double y = 0; y <= height; y += MinorGridSpacing)
+                {
+                    dc.DrawLine(minorPen,
+                        new Point(LeftMargin, y),
+                        new Point(width, y));
+                }
+
+                // Major Vertical
+                for (double x = LeftMargin; x <= width; x += MajorGridSpacing)
+                {
+                    dc.DrawLine(majorPen,
+                        new Point(x, 0),
+                        new Point(x, height));
+                }
+
+                // Major Horizontal
+                for (double y = 0; y <= height; y += MajorGridSpacing)
+                {
+                    dc.DrawLine(majorPen,
+                        new Point(LeftMargin, y),
+                        new Point(width, y));
+                }
+            });
+        }
 
         private void DrawLine(LifeChartData line)
         {
@@ -299,9 +403,7 @@
             // 2️⃣ Neue Y-Position berechnen (letzter Wert)
             double value = line.Values[^1];
 
-            double normalized =
-                (value - MinValue) /
-                (MaxValue - MinValue);
+            double normalized = (value - MinValue) / (MaxValue - MinValue);
 
             double y = height - (normalized * height);
 
@@ -316,6 +418,71 @@
             {
                 polyline.Points.RemoveAt(0);
             }
+        }
+
+        private void ClearAxisLabels()
+        {
+            foreach (var tb in _axisLabels)
+                PART_Canvas.Children.Remove(tb);
+
+            _axisLabels.Clear();
+        }
+
+        private void DrawAxisLabels()
+        {
+            ClearAxisLabels();
+
+            double width = PART_Canvas.ActualWidth;
+            double height = PART_Canvas.ActualHeight - BottomMargin;
+
+            if (width <= 0 || height <= 0)
+                return;
+
+            // 🔹 Y-Achsen-Beschriftung
+            double valueRange = MaxValue - MinValue;
+            int steps = 5; // Anzahl der Beschriftungen
+
+            for (int i = 0; i <= steps; i++)
+            {
+                double value = MinValue + (valueRange / steps) * i;
+                double normalized = (value - MinValue) / valueRange;
+                double y = height - (normalized * height);
+
+                var tb = CreateLabel(value.ToString("0", CultureInfo.CurrentCulture), 5, y - 10);
+                _axisLabels.Add(tb);
+                PART_Canvas.Children.Add(tb);
+            }
+
+            // 🔹 X-Achsen-Beschriftung (Zeitachse)
+            int secondsVisible = 5; // z.B. 5 Sekunden sichtbar
+            double pixelsPerSecond = 100; // abhängig von XStep & Timer
+
+            for (int i = 0; i <= secondsVisible; i++)
+            {
+                double x = LeftMargin + width - (i * pixelsPerSecond);
+
+                if (x < LeftMargin)
+                    continue;
+
+                var tb = CreateLabel($"{i}s", x - 10, height + 5);
+                _axisLabels.Add(tb);
+                PART_Canvas.Children.Add(tb);
+            }
+        }
+
+        private static TextBlock CreateLabel(string text, double x, double y)
+        {
+            var tb = new TextBlock
+            {
+                Text = text,
+                Foreground = Brushes.White,
+                FontSize = 11
+            };
+
+            Canvas.SetLeft(tb, x);
+            Canvas.SetTop(tb, y);
+
+            return tb;
         }
 
         private void DrawAxes()
@@ -348,70 +515,6 @@
             PART_Canvas.Children.Add(yAxis);
         }
 
-        private void DrawGrid()
-        {
-            double width = PART_Canvas.ActualWidth;
-            double height = PART_Canvas.ActualHeight - BottomMargin;
-
-            if (width <= 0 || height <= 0)
-                return;
-
-            // 🔹 Minor Vertical Lines
-            for (double x = LeftMargin; x <= width; x += MinorGridSpacing)
-            {
-                PART_Canvas.Children.Add(new Line
-                {
-                    X1 = x,
-                    Y1 = 0,
-                    X2 = x,
-                    Y2 = height,
-                    Stroke = MinorGridBrush,
-                    StrokeThickness = 1
-                });
-            }
-
-            // 🔹 Minor Horizontal Lines
-            for (double y = 0; y <= height; y += MinorGridSpacing)
-            {
-                PART_Canvas.Children.Add(new Line
-                {
-                    X1 = LeftMargin,
-                    Y1 = y,
-                    X2 = width,
-                    Y2 = y,
-                    Stroke = MinorGridBrush,
-                    StrokeThickness = 1
-                });
-            }
-
-            // 🔹 Major Vertical Lines
-            for (double x = LeftMargin; x <= width; x += MajorGridSpacing)
-            {
-                PART_Canvas.Children.Add(new Line
-                {
-                    X1 = x,
-                    Y1 = 0,
-                    X2 = x,
-                    Y2 = height,
-                    Stroke = MajorGridBrush,
-                    StrokeThickness = 1.5
-                });
-            }
-
-            // 🔹 Major Horizontal Lines
-            for (double y = 0; y <= height; y += MajorGridSpacing)
-            {
-                PART_Canvas.Children.Add(new Line
-                {
-                    X1 = LeftMargin,
-                    Y1 = y,
-                    X2 = width,
-                    Y2 = y,
-                    Stroke = MajorGridBrush,
-                    StrokeThickness = 1.5
-                });
-            }
-        }
         #endregion    
     }
 }
