@@ -611,12 +611,12 @@ namespace ChartNETDemo
 
             var timer = new DispatcherTimer
             {
-                Interval = TimeSpan.FromMilliseconds(200)
+                Interval = TimeSpan.FromMilliseconds(100)
             };
 
             timer.Tick += (_, _) =>
             {
-                if (line1.Values.Count > 200)
+                if (line1.Values.Count > 300)
                 {
                     line1.Values.RemoveAt(0);
                     line2.Values.RemoveAt(0);

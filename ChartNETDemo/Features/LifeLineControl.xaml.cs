@@ -56,11 +56,16 @@
     {
         private const double LeftMargin = 50;
         private const double BottomMargin = 30;
+        private const double XStep = 2; // muss identisch zum Scroll sein
+        private const double TimerIntervalMs = 50;
 
         private GridVisualHost _gridHost;
         private readonly Dictionary<LifeChartData, Polyline> _lineMap = new();
         private INotifyCollectionChanged _currentCollection;
         private readonly List<TextBlock> _axisLabels = new();
+        private readonly List<UIElement> _axisElements = new();
+        private double ChartWidth => PART_Canvas.ActualWidth - LeftMargin;
+        private double ChartHeight => PART_Canvas.ActualHeight - BottomMargin;
 
         public LifeLineControl()
         {
@@ -75,6 +80,13 @@
 
             Loaded += (_, _) => RedrawAll();
             SizeChanged += (_, _) => RedrawAll();
+            IsVisibleChanged += (_, _) =>
+            {
+                if (!IsVisible)
+                    return;
+
+                RedrawAll();
+            };
         }
         #region DependencyProperties
 
@@ -116,19 +128,6 @@
                 typeof(double),
                 typeof(LifeLineControl),
                 new PropertyMetadata(150.0, OnScaleChanged));
-
-        public double XStep
-        {
-            get => (double)GetValue(XStepProperty);
-            set => SetValue(XStepProperty, value);
-        }
-
-        public static readonly DependencyProperty XStepProperty =
-            DependencyProperty.Register(
-                nameof(XStep),
-                typeof(double),
-                typeof(LifeLineControl),
-                new PropertyMetadata(20.0));
 
         public Brush ChartBackground
         {
@@ -318,15 +317,22 @@
             if (!IsLoaded)
                 return;
 
-            DrawGrid();
-            DrawAxes();
-            DrawAxisLabels();
+            if (PART_Canvas.ActualWidth <= 0 ||
+                PART_Canvas.ActualHeight <= 0)
+                return;
 
-            foreach (var kvp in _lineMap)
+            Dispatcher.BeginInvoke(new Action(() =>
             {
-                if (!PART_Canvas.Children.Contains(kvp.Value))
-                    PART_Canvas.Children.Add(kvp.Value);
-            }
+                if (PART_Canvas.ActualWidth <= 0 ||
+                    PART_Canvas.ActualHeight <= 0)
+                    return;
+
+                DrawGrid();
+                DrawAxes();
+                DrawYAxisLabels();
+                DrawXAxisLabels();
+            }),
+            System.Windows.Threading.DispatcherPriority.Render);
         }
 
         private void DrawGrid()
@@ -428,43 +434,63 @@
             _axisLabels.Clear();
         }
 
-        private void DrawAxisLabels()
+        private void DrawYAxisLabels()
         {
-            ClearAxisLabels();
-
-            double width = PART_Canvas.ActualWidth;
-            double height = PART_Canvas.ActualHeight - BottomMargin;
+            double width = ChartWidth;
+            double height = ChartHeight;
 
             if (width <= 0 || height <= 0)
                 return;
 
-            // 🔹 Y-Achsen-Beschriftung
-            double valueRange = MaxValue - MinValue;
-            int steps = 5; // Anzahl der Beschriftungen
+            ClearAxisLabels();
 
-            for (int i = 0; i <= steps; i++)
+            int majorSteps = (int)((MaxValue - MinValue) / 50); // z.B. 50er Schritte
+            if (majorSteps <= 0)
+                majorSteps = 1;
+
+            double stepValue = (MaxValue - MinValue) / majorSteps;
+
+            for (int i = 0; i <= majorSteps; i++)
             {
-                double value = MinValue + (valueRange / steps) * i;
-                double normalized = (value - MinValue) / valueRange;
+                double value = MinValue + (i * stepValue);
+
+                double normalized = (value - MinValue) / (MaxValue - MinValue);
+
                 double y = height - (normalized * height);
 
-                var tb = CreateLabel(value.ToString("0", CultureInfo.CurrentCulture), 5, y - 10);
+                var tb = CreateLabel(value.ToString("0"),
+                                     5,
+                                     y - 8);
+
                 _axisLabels.Add(tb);
                 PART_Canvas.Children.Add(tb);
             }
+        }
 
-            // 🔹 X-Achsen-Beschriftung (Zeitachse)
-            int secondsVisible = 5; // z.B. 5 Sekunden sichtbar
-            double pixelsPerSecond = 100; // abhängig von XStep & Timer
+        private void DrawXAxisLabels()
+        {
+            double width = ChartWidth;
+            double height = ChartHeight;
 
-            for (int i = 0; i <= secondsVisible; i++)
+            if (width <= 0 || height <= 0)
+                return;
+
+            double totalMsVisible = width * (TimerIntervalMs / XStep);
+            double secondsVisible = totalMsVisible / 1000.0;
+
+            int fullSeconds = (int)Math.Floor(secondsVisible);
+
+            for (int s = 0; s <= fullSeconds; s++)
             {
-                double x = LeftMargin + width - (i * pixelsPerSecond);
+                double x = LeftMargin + width - (s * 1000.0 / (TimerIntervalMs / XStep));
 
                 if (x < LeftMargin)
                     continue;
 
-                var tb = CreateLabel($"{i}s", x - 10, height + 5);
+                var tb = CreateLabel($"{s}s",
+                                     x - 10,
+                                     height + 5);
+
                 _axisLabels.Add(tb);
                 PART_Canvas.Children.Add(tb);
             }
@@ -487,8 +513,14 @@
 
         private void DrawAxes()
         {
+            // Alte Achsen entfernen
+            foreach (var el in _axisElements)
+                PART_Canvas.Children.Remove(el);
+
+            _axisElements.Clear();
+
             double width = PART_Canvas.ActualWidth;
-            double height = PART_Canvas.ActualHeight;
+            double height = PART_Canvas.ActualHeight - BottomMargin;
 
             if (width <= 0 || height <= 0)
                 return;
@@ -496,9 +528,9 @@
             var xAxis = new Line
             {
                 X1 = LeftMargin,
-                Y1 = height - BottomMargin,
+                Y1 = height,
                 X2 = width,
-                Y2 = height - BottomMargin,
+                Y2 = height,
                 Stroke = Brushes.White
             };
 
@@ -507,14 +539,16 @@
                 X1 = LeftMargin,
                 Y1 = 0,
                 X2 = LeftMargin,
-                Y2 = height - BottomMargin,
+                Y2 = height,
                 Stroke = Brushes.White
             };
+
+            _axisElements.Add(xAxis);
+            _axisElements.Add(yAxis);
 
             PART_Canvas.Children.Add(xAxis);
             PART_Canvas.Children.Add(yAxis);
         }
-
         #endregion    
     }
 }
