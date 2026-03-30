@@ -2,25 +2,28 @@
 {
     using System.Collections.Generic;
     using System.Globalization;
-    using System.IO;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
     using System.Windows.Shapes;
 
-    public class HorizontalBarChartPoint
+    #region Klasse HorizontalBarChartPoint
+    public sealed class HorizontalBarChartPoint
     {
         public string Y { get; set; } = "";
         public double X { get; set; }
     }
+    #endregion Klasse HorizontalBarChartPoint
 
-    public class HorizontalBarSeries
+    #region Klasse HorizontalBarSeries
+    public sealed class HorizontalBarSeries
     {
         public string Title { get; set; } = "";
         public Brush Fill { get; set; } = Brushes.SteelBlue;
         public IList<HorizontalBarChartPoint> Values { get; set; } = new List<HorizontalBarChartPoint>();
     }
+    #endregion Klasse HorizontalBarSeries
 
     public partial class HorizontalBarChartControl : UserControl
     {

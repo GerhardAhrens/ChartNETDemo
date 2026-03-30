@@ -3,13 +3,13 @@
     using System;
     using System.Collections.Generic;
     using System.Globalization;
-    using System.IO;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
     using System.Windows.Shapes;
 
+    #region Klasse GanttTask
     public sealed class GanttTask
     {
         public string Title { get; set; } = "";
@@ -17,12 +17,15 @@
         public DateTime End { get; set; }
         public Brush Fill { get; set; } = Brushes.SteelBlue;
     }
+    #endregion Klasse GanttTask
 
+    #region Klasse GanttDependency
     public sealed class GanttDependency
     {
         public GanttTask From { get; set; } = null!;
         public GanttTask To { get; set; } = null!;
     }
+    #endregion Klasse GanttDependency
 
     /// <summary>
     /// Interaktionslogik für GanttChartControl.xaml

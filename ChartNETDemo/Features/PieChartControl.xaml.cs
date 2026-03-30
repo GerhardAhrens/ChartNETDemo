@@ -9,12 +9,14 @@
     using System.Windows.Media.Imaging;
     using System.Windows.Shapes;
 
-    public class PieSegment
+    #region Klasse PieSegment
+    public sealed class PieSegment
     {
         public string Label { get; set; }
         public double Value { get; set; }
         public Brush Fill { get; set; } = Brushes.Blue;
     }
+    #endregion Klasse PieSegment
 
     /// <summary>
     /// Interaktionslogik für PieChartControl.xaml

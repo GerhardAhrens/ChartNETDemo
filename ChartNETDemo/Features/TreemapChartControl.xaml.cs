@@ -1,4 +1,21 @@
-﻿namespace ChartNETDemo
+﻿//-----------------------------------------------------------------------
+// <copyright file="TreemapChartControl.cs" company="Lifeprojects.de">
+//     Class: TreemapChartControl
+//     Copyright © Lifeprojects.de 2026
+// </copyright>
+//
+// <author>Gerhard Ahrens - Lifeprojects.de</author>
+// <email>developer@lifeprojects.de</email>
+// <date>30.03.2026</date>
+//
+// <summary>
+// Klassen und Funktionen für ein Treemap Chart Control in WPF.
+// Das Control ermöglicht die Darstellung von hierarchischen Daten als verschachtelte Rechtecke, wobei die Größe der Rechtecke den Werten der
+// Daten entspricht. Es unterstützt die Anzeige von Labels, Tooltips und einer Legende. Außerdem kann das Chart als PNG-Bild exportiert werden.
+// </summary>
+//-----------------------------------------------------------------------
+
+namespace ChartNETDemo
 {
     using System.Collections.Generic;
     using System.Windows;
@@ -7,18 +24,22 @@
     using System.Windows.Media.Imaging;
     using System.Windows.Shapes;
 
-    public class TreemapItem
+    #region Klasse TreemapItem
+    public sealed class TreemapItem
     {
         public string Label { get; set; } = "";
         public double Value { get; set; }
     }
+    #endregion Klasse TreemapItem
 
-    public class TreemapGroup
+    #region Klasse TreemapGroup
+    public sealed class TreemapGroup
     {
         public string Title { get; set; } = "";
         public Brush Fill { get; set; } = Brushes.SteelBlue;
         public IList<TreemapItem> Items { get; set; } = new List<TreemapItem>();
     }
+    #endregion Klasse TreemapGroup
 
     /// <summary>
     /// Interaktionslogik für TreemapChartControl.xaml

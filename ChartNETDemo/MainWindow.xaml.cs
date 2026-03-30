@@ -611,19 +611,19 @@ namespace ChartNETDemo
 
             var timer = new DispatcherTimer
             {
-                Interval = TimeSpan.FromMilliseconds(100)
+                Interval = TimeSpan.FromMilliseconds(30)
             };
 
             timer.Tick += (_, _) =>
             {
-                if (line1.Values.Count > 300)
+                if (line1.Values.Count > 10)
                 {
                     line1.Values.RemoveAt(0);
                     line2.Values.RemoveAt(0);
                 }
 
-                line1.Values.Add(Math.Sin(DateTime.Now.Millisecond / 100.0) * 80);
-                line2.Values.Add((_rand.NextDouble() - 0.5) * 150);
+                line1.Values.Add(Math.Sin(DateTime.Now.Millisecond / 200.0) * 45);
+                line2.Values.Add(Math.Cos(DateTime.Now.Millisecond / 125.0) * 40);
             };
 
             timer.Start();

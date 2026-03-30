@@ -12,7 +12,8 @@
     using System.Windows.Media;
     using System.Windows.Shapes;
 
-    public class GridVisualHost : FrameworkElement
+    #region Klasse GridVisualHost
+    public sealed class GridVisualHost : FrameworkElement
     {
         private readonly VisualCollection _children;
         private DrawingVisual _gridVisual;
@@ -35,6 +36,8 @@
         protected override Visual GetVisualChild(int index)
             => _children[index];
     }
+    #endregion Klasse GridVisualHost
+
 
     public class LifeChartData : INotifyPropertyChanged
     {
@@ -458,9 +461,7 @@
 
                 double y = height - (normalized * height);
 
-                var tb = CreateLabel(value.ToString("0"),
-                                     5,
-                                     y - 8);
+                var tb = CreateLabel(value.ToString("0",CultureInfo.CurrentCulture), 5, y - 8);
 
                 _axisLabels.Add(tb);
                 PART_Canvas.Children.Add(tb);

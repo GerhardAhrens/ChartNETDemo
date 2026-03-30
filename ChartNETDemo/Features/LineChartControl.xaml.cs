@@ -10,9 +10,11 @@
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
     using System.Windows.Shapes;
+    using System.Windows.Threading;
 
+    #region Klasse ChartLine
     [DebuggerDisplay("Titel: {this.Title}; Anzahl: {this.Values.Count}")]
-    public class ChartLine : INotifyPropertyChanged
+    public sealed class ChartLine : INotifyPropertyChanged
     {
         private string _Title;
 
@@ -75,12 +77,14 @@
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        public void OnPropertyChanged([CallerMemberName] string name = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
+    #endregion Klasse ChartLine
 
+    #region Klasse ChartPoint
     [DebuggerDisplay("Category: {this.Category}; Value: {this.Value}")]
-    public class ChartPoint : INotifyPropertyChanged
+    public sealed class ChartPoint : INotifyPropertyChanged
     {
         /// <summary>
         /// Category; X-Achse, Legende
@@ -185,16 +189,11 @@
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        public void OnPropertyChanged([CallerMemberName] string name = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
-    public enum AxisTitleAlignment
-    {
-        Start,
-        Center,
-        End
-    }
+    #endregion Klasse ChartPoint
 
     /// <summary>
     /// Interaktionslogik für LineChartUC.xaml
@@ -212,7 +211,18 @@
         public LineChartControl()
         {
             this.InitializeComponent();
+            this.Loaded += this.LineChartControl_Loaded;
             SizeChanged += (_, _) => this.Redraw();
+        }
+
+        ~LineChartControl()
+        {
+            this.Dispatcher.BeginInvoke((Action)(() => {
+                this.Loaded -= this.LineChartControl_Loaded;
+                this.SizeChanged -= (_, _) => this.Redraw();
+                this.ItemSource.CollectionChanged -= this.ItemSource_CollectionChanged;
+            }), DispatcherPriority.Send);
+
         }
 
         #region Dependency Properties
@@ -395,6 +405,24 @@
                 new PropertyMetadata(AxisTitleAlignment.Center, OnChartPropertyChanged));
 
         #endregion
+
+        private void LineChartControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (this.ItemSource != null)
+            {
+                this.ItemSource.CollectionChanged += this.ItemSource_CollectionChanged;
+            }
+        }
+
+        private void ItemSource_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (this.ItemSource == null || this.ItemSource.Count == 0)
+            {
+                return;
+            }
+
+            this.Redraw();
+        }
 
         private void ChartCanvas_SizeChanged(object sender, SizeChangedEventArgs e)
         {

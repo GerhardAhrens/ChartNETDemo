@@ -10,7 +10,8 @@
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
 
-    public class ScatterPoint : INotifyPropertyChanged
+    #region Klasse ScatterPoint
+    public sealed class ScatterPoint : INotifyPropertyChanged
     {
         public double X { get; set; }
         public double Y { get; set; }
@@ -46,29 +47,36 @@
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        public void OnPropertyChanged([CallerMemberName] string name = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
+    #endregion Klasse ScatterPoint
 
-    public class GridLine
+    #region Klasse GridLine
+    public sealed class GridLine
     {
         public double X1 { get; set; }
         public double Y1 { get; set; }
         public double X2 { get; set; }
         public double Y2 { get; set; }
     }
+    #endregion Klasse GridLine
 
-    public class LegendItem
+    #region Klasse ScatterChartLegendItem
+    public sealed class ScatterChartLegendItem
     {
         public string Name { get; set; }
         public Brush Color { get; set; }
     }
+    #endregion Klasse ScatterChartLegendItem
 
-    public class AxisTick
+    #region Klasse ScatterChartAxisTick
+    public sealed class ScatterChartAxisTick
     {
         public double Position { get; set; }   // Pixelposition im Canvas
         public string Label { get; set; }      // Textwert
     }
+    #endregion Klasse ScatterChartAxisTick
 
     /// <summary>
     /// Interaktionslogik für ScatterChartControl.xaml
@@ -127,9 +135,9 @@
                 typeof(ScatterChartControl),
                 new PropertyMetadata(false, OnItemsChanged));
 
-        public ObservableCollection<LegendItem> Legend { get; } = new();
-        public ObservableCollection<AxisTick> XTicks { get; } = new();
-        public ObservableCollection<AxisTick> YTicks { get; } = new();
+        public ObservableCollection<ScatterChartLegendItem> Legend { get; } = new();
+        public ObservableCollection<ScatterChartAxisTick> XTicks { get; } = new();
+        public ObservableCollection<ScatterChartAxisTick> YTicks { get; } = new();
         public ObservableCollection<GridLine> GridLines { get; } = new();
 
         #region Create Chart
@@ -151,7 +159,7 @@
 
             foreach (var g in this.ItemsSource.GroupBy(p => p.Category))
             {
-                this.Legend.Add(new LegendItem
+                this.Legend.Add(new ScatterChartLegendItem
                 {
                     Name = g.Key,
                     Color = g.First().Color
@@ -298,7 +306,7 @@
                 double t = (double)i / (ticks - 1);
                 double value = min + t * (max - min);
 
-                this.XTicks.Add(new AxisTick
+                this.XTicks.Add(new ScatterChartAxisTick
                 {
                     Position = PADDING + t * width,
                     Label = value.ToString("0.##", CultureInfo.CurrentCulture)
@@ -315,7 +323,7 @@
                 double t = (double)i / (ticks - 1);
                 double value = min + t * (max - min);
 
-                this.YTicks.Add(new AxisTick
+                this.YTicks.Add(new ScatterChartAxisTick
                 {
                     Position = PADDING + (1 - t) * height,
                     Label = value.ToString("0.##", CultureInfo.CurrentCulture)
@@ -350,7 +358,7 @@
 
                     double norm = (Math.Log10(value) - logMin) / (logMax - logMin);
 
-                    this.XTicks.Add(new AxisTick
+                    this.XTicks.Add(new ScatterChartAxisTick
                     {
                         Position = PADDING + norm * plotWidth,
                         Label = value.ToString("0.##", CultureInfo.CurrentCulture)
@@ -386,7 +394,7 @@
 
                     double norm = (Math.Log10(value) - logMin) / (logMax - logMin);
 
-                    YTicks.Add(new AxisTick
+                    YTicks.Add(new ScatterChartAxisTick
                     {
                         Position = PADDING + (1 - norm) * plotHeight,
                         Label = value.ToString("0.##", CultureInfo.CurrentCulture)

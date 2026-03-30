@@ -6,35 +6,24 @@
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
     using System.Windows.Shapes;
+    using System.Windows.Threading;
 
-    public enum AxisScaleFormat
-    {
-        Number,     // 1234
-        NumberK,    // 1.2k
-        NumberM,    // 1.2M
-        Percent     // 25 %
-    }
-
-    public enum LegendPosition
-    {
-        Left,
-        Right,
-        Top,
-        Bottom
-    }
-
-    public class BarChartPoint
+    #region Klasse BarChartPoint
+    public sealed class BarChartPoint
     {
         public string X { get; set; } = "";
         public double Y { get; set; }
     }
+    #endregion Klasse BarChartPoint
 
-    public class BarSeries
+    #region Klasse BarSeries
+    public sealed class BarSeries
     {
         public string Title { get; set; } = "";
         public Brush Fill { get; set; } = Brushes.SteelBlue;
         public IList<BarChartPoint> Values { get; set; } = new List<BarChartPoint>();
     }
+    #endregion Klasse BarSeries
 
     /// <summary>
     /// Interaktionslogik für BarChartControl.xaml
@@ -59,6 +48,15 @@
                 this.UpdateLegendLayout();
                 this.Redraw();
             };
+        }
+
+        ~BarChartControl()
+        {
+            this.Dispatcher.BeginInvoke((Action)(() => {
+                this.Loaded -= (_, __) => { };
+                this.SizeChanged -= (_, _) => { };
+            }), DispatcherPriority.Send);
+
         }
 
         #region X-Achsentitel + Gridlines

@@ -8,18 +8,22 @@
     using System.Windows.Media.Imaging;
     using System.Windows.Shapes;
 
-    public class ColumnChartPoint
+    #region Klasse ColumnChartPoint
+    public sealed class ColumnChartPoint
     {
         public string X { get; set; } = "";
         public double Y { get; set; }
     }
+    #endregion Klasse ColumnChartPoint
 
-    public class ColumnChartSeries
+    #region Klasse ColumnChartSeries
+    public sealed class ColumnChartSeries
     {
         public string Title { get; set; } = "";
         public Brush Fill { get; set; } = Brushes.SteelBlue;
         public IList<ColumnChartPoint> Values { get; set; } = new List<ColumnChartPoint>();
     }
+    #endregion Klasse ColumnChartSeries
 
     /// <summary>
     /// Interaktionslogik für ColumnChartControl.xaml

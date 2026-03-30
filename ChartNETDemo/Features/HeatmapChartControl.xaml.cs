@@ -10,18 +10,14 @@
     using System.Windows.Media.Imaging;
     using System.Windows.Shapes;
 
-    public enum HeatmapScaleType
-    {
-        Linear,
-        Logarithmic
-    }
-
-    public class HeatmapCell
+    #region Klasse HeatmapCell
+    public sealed class HeatmapCell
     {
         public string X { get; set; } = "";
         public string Y { get; set; } = "";
         public double Value { get; set; }
     }
+    #endregion Klasse HeatmapCell
 
     /// <summary>
     /// Interaktionslogik für HeatmapChartControl.xaml
