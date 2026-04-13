@@ -1,7 +1,7 @@
-# Chart Controls in WPF für NET
+# Chart Controls in WPF für NET Core 10
 
 [![NET Framework](https://img.shields.io/badge/NET%20Core-%2010-red.svg)](#)
-[![Version](https://img.shields.io/badge/Version-%201.0.2026.5-blue.svg)](#)
+[![Version](https://img.shields.io/badge/Version-%201.0.2026.1-blue.svg)](#)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![VS2022](https://img.shields.io/badge/Visual%20Studio-2026-white.svg)
 
@@ -11,9 +11,7 @@ Die Chart Controls sind mit absicht einfach gehalten, um die Grundfunktionalität
 
 In einem Demo-Projekt sind die verschiedenen Chart Controls implementiert und können direkt in einer WPF-Anwendung verwendet werden.
 
-**Hinweis:** Die einzelnen Charts funktionionieren, sind aber nicht ausgiebig getestet. So kann an der einen oder anderen Stelle noch Fehler auftreten.
-
-## Implementierte Diagrammtypen:
+Implementierte Diagrammtypen:\
 | Diagrammtyp        | Beschreibung                              |
 |:--------------------|:-------------------------------------------|
 | Line Chart     | Darstellung von Datenpunkten als Linie    |
@@ -26,7 +24,7 @@ In einem Demo-Projekt sind die verschiedenen Chart Controls implementiert und kö
 | Headmap Chart    | Darstellung von Daten im Verhältnis der Farbinensität |
 | Scatter Chart    | Darstellung von Daten in einem Streuungsdiagramm |
 
-### Verschiedene Beispiele der implementierten Chart Typen
+Verschiedene Beispiele der Charts
 - Line Chart
 <img src="LineChartDemo.png" style="width:650px;"/>
 
@@ -43,12 +41,11 @@ In einem Demo-Projekt sind die verschiedenen Chart Controls implementiert und kö
 <img src="ScatterChartDemo.png" style="width:650px;"/>
 
 ## Versionshistorie
-[![Versionshistorie](https://img.shields.io/badge/Version-%201.0.2026.4-blue.svg)](#)
-- Bugfix im LineChart (Es kam zu einer Exception, wenn dem die Datenquelle zur Laufzeit geändert wurde)
-- Überarbeitung Source Code, um die Wartbarkeit zu verbessern
+![Versionshistorie](https://img.shields.io/badge/Version-%201.0.2026.4-blue.svg)
+- Migration auf NET Core 10
 
-[![Versionshistorie](https://img.shields.io/badge/Version-%201.0.2026.3-blue.svg)](#)
+![Versionshistorie](https://img.shields.io/badge/Version-%201.0.2026.3-blue.svg)
 - Scatter Chart Control (Streuungsdiagramm) hinzugefügt
 
-[![Versionshistorie](https://img.shields.io/badge/Version-%201.0.2026.2-blue.svg)](#)
+![Versionshistorie](https://img.shields.io/badge/Version-%201.0.2026.2-blue.svg)
 - Zu allen Charts wurde eine Tooltip Funktion hinzugefügt.
