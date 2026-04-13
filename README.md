@@ -11,7 +11,8 @@ Die Chart Controls sind mit absicht einfach gehalten, um die Grundfunktionalität
 
 In einem Demo-Projekt sind die verschiedenen Chart Controls implementiert und können direkt in einer WPF-Anwendung verwendet werden.
 
-Implementierte Diagrammtypen:\
+Implementierte Diagrammtypen:
+
 | Diagrammtyp        | Beschreibung                              |
 |:--------------------|:-------------------------------------------|
 | Line Chart     | Darstellung von Datenpunkten als Linie    |
@@ -23,6 +24,7 @@ Implementierte Diagrammtypen:\
 | Treemap Chart    | Darstellung von Daten im Größenverhältnis |
 | Headmap Chart    | Darstellung von Daten im Verhältnis der Farbinensität |
 | Scatter Chart    | Darstellung von Daten in einem Streuungsdiagramm |
+| LifeLine Chart    | Darstellung von Daten als bewegende Linien. **Hier ist aber anzumerken, das die Technik 'zeichen' auf einem Canvas an ihre Grenzen kommen. der Chart wirkt ungenau und ruckelig. Ich habe dies daher nicht weiterverfolgt.**|
 
 Verschiedene Beispiele der Charts
 - Line Chart
